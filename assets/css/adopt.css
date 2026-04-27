@@ -1,0 +1,136 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    background: #f4f6f5;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0 10px;
+}
+
+/* HEADINGS */
+h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+h3 {
+    margin: 20px 0 10px;
+    font-size: 18px;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr; /* 🔥 FIX: vertical layout */
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+/* CARD */
+.card {
+    display: flex; /* 🔥 FIX: horizontal layout */
+    align-items: center;
+    gap: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+
+/* IMAGE */
+.card img {
+    width: 150px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* INFO TEXT */
+.card h4 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.card p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* FORM */
+.card form {
+    margin-left: auto; /* 🔥 pushes form to right */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 200px;
+}
+
+input {
+    width: 100%;
+    padding: 9px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+}
+
+input:focus {
+    border-color: #2d6a4f;
+    outline: none;
+}
+
+/* BUTTON */
+button {
+    padding: 10px;
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+button:hover {
+    background: #1b4332;
+}
+
+/* SUCCESS */
+.success {
+    background: #d8f3dc;
+    padding: 10px;
+    text-align: center;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card img {
+        width: 100%;
+        height: 180px;
+    }
+
+    .card form {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: white;
+    border-radius: 12px;
+    color: #666;
+    font-size: 15px;
+    grid-column: 1 / -1;
+}

@@ -1,0 +1,82 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    background: #f4f6f5;
+}
+
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+h2 {
+    text-align: center;
+}
+
+/* CARD */
+.card {
+    display: flex;
+    background: white;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card img {
+    width: 200px;
+    object-fit: cover;
+}
+
+.content {
+    padding: 15px;
+    flex: 1;
+}
+
+.status {
+    font-weight: bold;
+}
+
+.status.pending {
+    color: orange;
+}
+
+.status.approved {
+    color: green;
+}
+
+.status.rejected {
+    color: red;
+}
+
+.actions {
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 8px 12px;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-right: 5px;
+    color: white;
+}
+
+.approve {
+    background: #2d6a4f;
+}
+
+.reject {
+    background: #d00000;
+}
+
+/* 📱 MOBILE */
+@media (max-width: 600px) {
+
+    .card {
+        flex-direction: column;
+    }
+
+    .card img {
+        width: 100%;
+        height: 200px;
+    }
+}
