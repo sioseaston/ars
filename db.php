@@ -2,7 +2,13 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-$client = new MongoDB\Client("mongodb+srv://entethegreat:abcd1234@ars-db.0x1ykko.mongodb.net");
+$uri = getenv("MONGO_URI");
+
+if (!$uri) {
+    die("❌ MONGO_URI not set");
+}
+
+$client = new MongoDB\Client($uri);
 
 $db = $client->ars_db;
 
