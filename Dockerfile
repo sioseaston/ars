@@ -16,7 +16,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN composer install
+RUN composer install --ignore-platform-req=ext-mongodb
 
 EXPOSE 10000
 
