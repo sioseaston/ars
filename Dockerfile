@@ -1,11 +1,17 @@
 FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev \
-    && docker-php-ext-install zip
-
-RUN pecl install mongodb \
-    && docker-php-ext-enable mongodb
+    ca-certificates \
+    git \
+    libssl-dev \
+    libzip-dev \
+    pkg-config \
+    unzip \
+    && docker-php-ext-install zip \
+    && pecl install mongodb-1.21.5 \
+    && docker-php-ext-enable mongodb \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -13,7 +19,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN composer install --ignore-platform-req=ext-mongodb
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 EXPOSE 10000
 
