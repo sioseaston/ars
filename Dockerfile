@@ -1,7 +1,7 @@
 FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev ca-certificates \
+    git unzip libzip-dev \
     && docker-php-ext-install zip
 
 RUN pecl install mongodb \
