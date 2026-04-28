@@ -241,7 +241,7 @@ body{
     <div>
 
         <!-- ✅ UPDATED LOGO -->
-        <div class="logo"><i class="fas fa-paw"></i> ARS</div>
+        <div class="logo"><i class="fas fa-paw"></i> ARSS</div>
 
         <!-- ✅ UPDATED MENU ICONS -->
         <div class="menu">
