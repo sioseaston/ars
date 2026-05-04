@@ -42,7 +42,7 @@
                 <div class="box">
                     <p>
                         The Animal Rescue System (ARS) is a web-based platform designed to help
-                        report missing or found domestic animals, report wildlife near homes or in critical condition, and support domestic or wildlife surrender cases. It connects the community
+                        report missing or found domestic animals, report wildlife near homes or in critical condition, and support wildlife surrender cases. It connects the community
                         with responders and promotes responsible animal care.
                     </p>
                 </div>
