@@ -1,3 +1,4 @@
+```php
 <?php
 require '../includes/auth.php';
 require '../db.php';
@@ -31,18 +32,16 @@ $a_rejected = $db->adoptions->countDocuments(['status'=>'rejected','created_at'=
 <title>Admin Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ✅ ICON LIBRARY ADDED -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
-/* ===== FIXED BODY ===== */
+/* ===== BODY ===== */
 body{
     margin:0;
     font-family:'Segoe UI';
-    background:#f4f6f5;
+    background:linear-gradient(to right, #f4f6f5, #eef2ef);
 }
 
 /* ===== SIDEBAR ===== */
@@ -51,33 +50,26 @@ body{
     height:100vh;
     background:linear-gradient(180deg,#1b4332,#2d6a4f);
     color:white;
-    padding:20px 20px 15px;
+    padding:20px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
     position:fixed;
     top:0;
     left:0;
+    overflow-y:auto;
 }
 
-/* LOGO */
 .logo{
     font-size:22px;
     font-weight:bold;
     margin-bottom:25px;
 }
 
-/* ✅ ICON FIX */
 .logo i{
     margin-right:8px;
 }
 
-.menu i{
-    width:20px;
-    text-align:center;
-}
-
-/* MENU */
 .menu{
     display:flex;
     flex-direction:column;
@@ -104,7 +96,11 @@ body{
     background:rgba(255,255,255,0.25);
 }
 
-/* LOGOUT */
+.menu i{
+    width:20px;
+    text-align:center;
+}
+
 .logout{
     padding:12px;
     border-radius:12px;
@@ -119,21 +115,17 @@ body{
     background:rgba(255,255,255,0.25);
 }
 
-.logout i{
-    margin-right:6px;
-}
-
 /* ===== MAIN ===== */
 .main{
     margin-left:260px;
-    width:calc(100% - 260px);
-    padding:20px;
-    box-sizing:border-box;
+    padding:30px;
+    min-height:100vh;
 }
 
 .container{
     max-width:1400px;
     margin:0 auto;
+    padding:10px;
 }
 
 /* HEADER */
@@ -141,10 +133,14 @@ body{
     margin-bottom:20px;
 }
 
-/* STATS */
+h1{
+    margin:5px 0 15px;
+}
+
+/* ===== STATS ===== */
 .stats{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
     gap:20px;
 }
 
@@ -156,12 +152,17 @@ body{
     justify-content:space-between;
     align-items:center;
     box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    height:100%;
 }
 
 .stat-left{
     display:flex;
     gap:15px;
     align-items:center;
+}
+
+.stat h2{
+    margin:5px 0 0;
 }
 
 .icon{
@@ -180,10 +181,10 @@ body{
     border-radius:10px;
 }
 
-/* CHARTS */
+/* ===== CHARTS ===== */
 .charts{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
     gap:20px;
     margin-top:25px;
 }
@@ -193,6 +194,12 @@ body{
     padding:20px;
     border-radius:18px;
     box-shadow:0 10px 25px rgba(0,0,0,0.05);
+    height:100%;
+}
+
+canvas{
+    width:100% !important;
+    height:220px !important;
 }
 
 .summary{
@@ -202,7 +209,7 @@ body{
     justify-content:space-between;
 }
 
-/* INSIGHTS */
+/* ===== INSIGHTS ===== */
 .insights{
     margin-top:25px;
     background:white;
@@ -213,7 +220,7 @@ body{
 
 .insight-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
+    grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
     gap:15px;
     margin-top:10px;
 }
@@ -226,9 +233,8 @@ body{
 
 /* MOBILE */
 @media(max-width:768px){
-.sidebar{display:none;}
-.main{margin-left:0;width:100%;}
-.stats,.charts,.insight-grid{grid-template-columns:1fr;}
+    .sidebar{display:none;}
+    .main{margin-left:0;}
 }
 
 </style>
@@ -236,14 +242,10 @@ body{
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
     <div>
-
-        <!-- ✅ UPDATED LOGO -->
         <div class="logo"><i class="fas fa-paw"></i> ARSS</div>
 
-        <!-- ✅ UPDATED MENU ICONS -->
         <div class="menu">
             <a class="active"><i class="fas fa-chart-bar"></i> Dashboard</a>
             <a href="reports.php"><i class="fas fa-flag"></i> Manage Reports</a>
@@ -251,18 +253,13 @@ body{
             <a href="adoptions.php"><i class="fas fa-heart"></i> Manage Adoptions</a>
             <a href="events.php"><i class="fas fa-calendar"></i> Manage Events</a>
         </div>
-
     </div>
 
-    <!-- ✅ UPDATED LOGOUT ICON -->
     <a href="logout.php" class="logout">
         <i class="fas fa-sign-out-alt"></i> Logout
     </a>
 </div>
 
-<!-- MAIN CONTENT (UNCHANGED BELOW) -->
-
-<!-- MAIN -->
 <div class="main">
 <div class="container">
 
@@ -271,7 +268,6 @@ body{
     <h1>Admin Dashboard</h1>
 </div>
 
-<!-- STATS -->
 <div class="stats">
 
 <div class="stat">
@@ -309,7 +305,6 @@ body{
 
 </div>
 
-<!-- CHARTS -->
 <div class="charts">
 
 <div class="chart-card">
@@ -344,7 +339,6 @@ body{
 
 </div>
 
-<!-- INSIGHTS -->
 <div class="insights">
 <h3>Quick Insights</h3>
 
@@ -378,33 +372,49 @@ Pending (<?= $r_pending ?>)
 
 <script>
 const options={
-scales:{y:{beginAtZero:true,ticks:{stepSize:1,precision:0}}}
+    scales:{y:{beginAtZero:true,ticks:{stepSize:1,precision:0}}}
 };
 
 new Chart(rChart,{
 type:'bar',
-data:{labels:['Pending','Approved','Rejected'],
-datasets:[{data:[<?= $r_pending ?>,<?= $r_approved ?>,<?= $r_rejected ?>],
-backgroundColor:['#f39c12','#2ecc71','#e74c3c']}]},
+data:{
+    labels:['Pending','Approved','Rejected'],
+    datasets:[{
+        label:'Reports',
+        data:[<?= $r_pending ?>,<?= $r_approved ?>,<?= $r_rejected ?>],
+        backgroundColor:['#f39c12','#2ecc71','#e74c3c']
+    }]
+},
 options:options
 });
 
 new Chart(sChart,{
 type:'bar',
-data:{labels:['Pending','Approved','Rejected'],
-datasets:[{data:[<?= $s_pending ?>,<?= $s_approved ?>,<?= $s_rejected ?>],
-backgroundColor:['#f39c12','#2ecc71','#e74c3c']}]},
+data:{
+    labels:['Pending','Approved','Rejected'],
+    datasets:[{
+        label:'Surrenders',
+        data:[<?= $s_pending ?>,<?= $s_approved ?>,<?= $s_rejected ?>],
+        backgroundColor:['#f39c12','#2ecc71','#e74c3c']
+    }]
+},
 options:options
 });
 
 new Chart(aChart,{
 type:'bar',
-data:{labels:['Pending','Approved','Rejected'],
-datasets:[{data:[<?= $a_pending ?>,<?= $a_approved ?>,<?= $a_rejected ?>],
-backgroundColor:['#f39c12','#2ecc71','#e74c3c']}]},
+data:{
+    labels:['Pending','Approved','Rejected'],
+    datasets:[{
+        label:'Adoptions',
+        data:[<?= $a_pending ?>,<?= $a_approved ?>,<?= $a_rejected ?>],
+        backgroundColor:['#f39c12','#2ecc71','#e74c3c']
+    }]
+},
 options:options
 });
 </script>
 
 </body>
 </html>
+```
