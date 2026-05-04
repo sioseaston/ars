@@ -310,6 +310,8 @@ body{
         <div class="meta">
             Name: <?= $report['name'] ?> |
             Contact: <?= $report['contact'] ?> |
+            Category: <?= ucwords(str_replace('_', ' ', $report['animal_category'] ?? 'domestic')) ?> |
+            Report: <?= ucwords(str_replace('_', ' ', $report['report_type'] ?? 'general')) ?> |
             Location: <?= $report['location'] ?>
         </div>
 
