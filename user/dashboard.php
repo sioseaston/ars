@@ -5,15 +5,21 @@ require '../db.php';
 $rescued = $db->reports->countDocuments(['status' => 'approved']);
 $missingReports = $db->reports->countDocuments(['report_type' => 'missing']);
 $foundReports = $db->reports->countDocuments(['report_type' => 'found']);
+$wildlifeReports = $db->reports->countDocuments(['animal_category' => 'wildlife']);
 $pendingReports = $db->reports->countDocuments(['status' => 'pending']);
 
 $missingAnimals = $db->reports->find(
-    ['status' => 'approved', 'report_type' => 'missing'],
+    ['status' => 'approved', 'animal_category' => ['$ne' => 'wildlife'], 'report_type' => 'missing'],
     ['sort' => ['created_at' => -1], 'limit' => 3]
 );
 
 $foundAnimals = $db->reports->find(
-    ['status' => 'approved', 'report_type' => 'found'],
+    ['status' => 'approved', 'animal_category' => ['$ne' => 'wildlife'], 'report_type' => 'found'],
+    ['sort' => ['created_at' => -1], 'limit' => 3]
+);
+
+$wildlifeAnimals = $db->reports->find(
+    ['status' => 'approved', 'animal_category' => 'wildlife'],
     ['sort' => ['created_at' => -1], 'limit' => 3]
 );
 
@@ -36,7 +42,7 @@ $events = $db->events->find(
 <style>
 .animal-board {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     margin-top: 25px;
 }
@@ -84,6 +90,12 @@ $events = $db->events->find(
     color: #555;
 }
 
+@media (max-width: 1100px) {
+    .animal-board {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .animal-board {
         grid-template-columns: 1fr;
@@ -119,8 +131,8 @@ $events = $db->events->find(
             <!-- HERO -->
             <section class="hero">
                 <div class="overlay">
-                    <h2>Report Missing or Found Domestic Animals</h2>
-                    <p>Help reunite missing pets with their families and share found domestic animals with the community.</p>
+                    <h2>Report Domestic and Wildlife Animals</h2>
+                    <p>Help report missing or found domestic animals, wildlife near homes, and wildlife in critical condition.</p>
                 </div>
             </section>
 
@@ -152,10 +164,18 @@ $events = $db->events->find(
                 </div>
 
                 <div class="card">
+                    <div class="icon"><i class="fa-solid fa-tree"></i></div>
+                    <div>
+                        <h3><?= $wildlifeReports ?></h3>
+                        <p>Wildlife Reports</p>
+                    </div>
+                </div>
+
+                <div class="card">
                     <div class="icon"><i class="fa-solid fa-clipboard"></i></div>
                     <div>
                         <h3><?= $pendingReports ?></h3>
-                        <p>Pending Reports</p>
+                        <p>Pending Cases</p>
                     </div>
                 </div>
 
@@ -210,6 +230,31 @@ $events = $db->events->find(
                     <?php endif; ?>
                 </div>
 
+                <div class="animal-panel">
+                    <h3>Wildlife Reports</h3>
+
+                    <?php
+                    $hasWildlife = false;
+                    foreach ($wildlifeAnimals as $animal):
+                        $hasWildlife = true;
+                        $wildlifeStatus = ($animal['report_type'] ?? '') === 'wildlife_critical' ? 'Critical condition' : 'Found near home/community';
+                    ?>
+                        <div class="animal-item">
+                            <img src="<?= htmlspecialchars($animal['image'] ?? '../assets/images/bg.jpg') ?>" alt="wildlife animal">
+                            <div>
+                                <strong><?= htmlspecialchars($animal['animal'] ?? 'Wildlife Animal') ?></strong>
+                                <p><?= htmlspecialchars($wildlifeStatus) ?></p>
+                                <p><?= htmlspecialchars($animal['location'] ?? 'Location not provided') ?></p>
+                                <p><?= htmlspecialchars($animal['description'] ?? '') ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <?php if (!$hasWildlife): ?>
+                        <div class="empty-note">No approved wildlife reports yet.</div>
+                    <?php endif; ?>
+                </div>
+
             </section>
 
             <!-- FOOTER GRID -->
@@ -219,7 +264,7 @@ $events = $db->events->find(
                 <div class="footer-box">
                     <h3>About ARS</h3>
                     <p>
-                        The Animal Rescue System (ARS) helps the community report missing domestic animals, share found domestic animals, and support rescue or surrender cases. Our goal is to connect reports with responders and help animals return to safe care.
+                        The Animal Rescue System (ARS) helps the community report domestic animals, wildlife found near homes, wildlife in critical condition, and surrender cases. Our goal is to connect reports with responders and help animals return to safe care.
                     </p>
                     <a href="about.php" class="learn-more">Learn more about us -></a>
                 </div>
@@ -246,9 +291,10 @@ $events = $db->events->find(
                 <div class="footer-box">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="report.php">Report Missing Animal</a></li>
-                        <li><a href="report.php">Report Found Animal</a></li>
-                        <li><a href="surrender.php">Surrender Support</a></li>
+                        <li><a href="report.php">Report Missing Domestic Animal</a></li>
+                        <li><a href="report.php">Report Found Domestic Animal</a></li>
+                        <li><a href="report.php">Report Wildlife Animal</a></li>
+                        <li><a href="surrender.php">Surrender Domestic or Wildlife Animal</a></li>
                         <li><a href="resources.php">Care Resources</a></li>
                         <li><a href="about.php">Contact Us</a></li>
                     </ul>
@@ -257,7 +303,7 @@ $events = $db->events->find(
                 <!-- CONTACT -->
                 <div class="footer-box">
                     <h3>Stay Connected</h3>
-                    <p>Follow us for missing and found animal updates.</p>
+                    <p>Follow us for domestic and wildlife animal updates.</p>
 
                     <div class="socials">
                         <i class="fa-brands fa-facebook"></i>
