@@ -12,11 +12,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = trim($_POST['description']);
     $reportType = $_POST['report_type'] ?? '';
 
+    $validReportTypes = ['missing', 'found', 'wildlife_found', 'wildlife_critical'];
+    $animalCategory = in_array($reportType, ['wildlife_found', 'wildlife_critical'], true) ? 'wildlife' : 'domestic';
+
     $lat = $_POST['latitude'] ?? '';
     $lng = $_POST['longitude'] ?? '';
 
-    if (!in_array($reportType, ['missing', 'found'], true)) {
-        $message = "Please choose if the animal is missing or found.";
+    if (!in_array($reportType, $validReportTypes, true)) {
+        $message = "Please choose the type of animal report.";
     } elseif (empty($name) || empty($contact) || empty($location)) {
         $message = "Name, contact, and location are required!";
     } elseif (!preg_match('/^09\d{9}$/', $contact)) {
@@ -38,6 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'name' => $name,
             'contact' => $contact,
             'animal' => $animal,
+            'animal_category' => $animalCategory,
             'report_type' => $reportType,
             'location' => $location,
             'description' => $description,
@@ -56,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Report Animal</title>
+    <title>Report Animal - ARS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- MAIN CSS -->
@@ -202,7 +206,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="header">
                 <button onclick="toggleSidebar()" class="menu-btn">☰</button>
-                <h1>Report a Missing or Found Animal</h1>
+                <h1>Report a Domestic or Wildlife Animal</h1>
             </div>
 
             <div class="form-box">
@@ -213,7 +217,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 <?php endif; ?>
 
-                <p><strong>Click on the map to select location</strong></p>
+                <p><strong>Click on the map to select the animal location</strong></p>
+                <p>Use this form for missing or found domestic animals, wildlife near your house, or wildlife in critical condition.</p>
 
                 <div id="map"></div>
 
@@ -235,12 +240,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <option value="">Select report type</option>
                             <option value="missing">Missing Domestic Animal</option>
                             <option value="found">Found Domestic Animal</option>
+                            <option value="wildlife_found">Wildlife Animal Found Near Home</option>
+                            <option value="wildlife_critical">Wildlife Animal in Critical Condition</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Animal Type</label>
-                        <input type="text" name="animal" placeholder="Example: Dog, cat, rabbit" required>
+                        <input type="text" name="animal" placeholder="Example: dog, cat, bird, monkey" required>
                     </div>
 
                     <div class="form-group">
@@ -249,8 +256,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <div class="form-group">
-                        <label>Description / Identifying Details</label>
-                        <textarea name="description" required></textarea>
+                        <label>Description / Condition Details</label>
+                        <textarea name="description" placeholder="For wildlife, describe if it is near your house, injured, weak, trapped, or in critical condition." required></textarea>
                     </div>
 
                     <div class="form-group">
