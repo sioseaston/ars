@@ -3,9 +3,19 @@ require '../db.php';
 
 // COUNTS
 $rescued = $db->reports->countDocuments(['status' => 'approved']);
-$adopted = $db->adoptions->countDocuments(['status' => 'approved']);
-$reports = $db->reports->countDocuments(['status' => 'pending']);
-$surrenders = $db->surrenders->countDocuments(['status' => 'pending']);
+$missingReports = $db->reports->countDocuments(['report_type' => 'missing']);
+$foundReports = $db->reports->countDocuments(['report_type' => 'found']);
+$pendingReports = $db->reports->countDocuments(['status' => 'pending']);
+
+$missingAnimals = $db->reports->find(
+    ['status' => 'approved', 'report_type' => 'missing'],
+    ['sort' => ['created_at' => -1], 'limit' => 3]
+);
+
+$foundAnimals = $db->reports->find(
+    ['status' => 'approved', 'report_type' => 'found'],
+    ['sort' => ['created_at' => -1], 'limit' => 3]
+);
 
 // 🔥 EVENTS (for Latest News)
 $events = $db->events->find(
@@ -23,6 +33,63 @@ $events = $db->events->find(
 
 <link rel="stylesheet" href="../assets/css/dashboard.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+.animal-board {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.animal-panel {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.animal-panel h3 {
+    margin-top: 0;
+    color: #1b4332;
+}
+
+.animal-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid #edf2ef;
+}
+
+.animal-item img {
+    width: 78px;
+    height: 78px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.animal-item strong {
+    display: block;
+    color: #1b4332;
+}
+
+.animal-item p {
+    margin: 4px 0;
+    color: #555;
+}
+
+.empty-note {
+    background: #f4f6f5;
+    border-radius: 10px;
+    padding: 14px;
+    color: #555;
+}
+
+@media (max-width: 768px) {
+    .animal-board {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 </head>
 <body>
 
@@ -35,7 +102,6 @@ $events = $db->events->find(
         <a href="dashboard.php" class="active"><i class="fa-solid fa-house"></i> Dashboard</a>
         <a href="report.php"><i class="fa-solid fa-flag"></i> Report</a>
         <a href="surrender.php"><i class="fa-solid fa-hand"></i> Surrender</a>
-        <a href="adopt.php"><i class="fa-solid fa-heart"></i> Adopt</a>
         <a href="events.php"><i class="fa-solid fa-calendar"></i> Events</a>
         <a href="resources.php"><i class="fa-solid fa-book"></i> Resources</a>
         <a href="about.php"><i class="fa-solid fa-circle-info"></i> About</a>
@@ -53,8 +119,8 @@ $events = $db->events->find(
             <!-- HERO -->
             <section class="hero">
                 <div class="overlay">
-                    <h2>Together, We Can Save More Lives</h2>
-                    <p>Help animals by reporting, surrendering, or adopting responsibly.</p>
+                    <h2>Report Missing or Found Domestic Animals</h2>
+                    <p>Help reunite missing pets with their families and share found domestic animals with the community.</p>
                 </div>
             </section>
 
@@ -65,32 +131,83 @@ $events = $db->events->find(
                     <div class="icon"><i class="fa-solid fa-paw"></i></div>
                     <div>
                         <h3><?= $rescued ?></h3>
-                        <p>Animals Rescued</p>
+                        <p>Animals Helped</p>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="icon"><i class="fa-solid fa-heart"></i></div>
+                    <div class="icon"><i class="fa-solid fa-magnifying-glass"></i></div>
                     <div>
-                        <h3><?= $adopted ?></h3>
-                        <p>Animals Adopted</p>
+                        <h3><?= $missingReports ?></h3>
+                        <p>Missing Reports</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
+                    <div>
+                        <h3><?= $foundReports ?></h3>
+                        <p>Found Reports</p>
                     </div>
                 </div>
 
                 <div class="card">
                     <div class="icon"><i class="fa-solid fa-clipboard"></i></div>
                     <div>
-                        <h3><?= $reports ?></h3>
-                        <p>Active Reports</p>
+                        <h3><?= $pendingReports ?></h3>
+                        <p>Pending Reports</p>
                     </div>
                 </div>
 
-                <div class="card">
-                    <div class="icon"><i class="fa-solid fa-user"></i></div>
-                    <div>
-                        <h3><?= $surrenders ?></h3>
-                        <p>Surrenders</p>
-                    </div>
+            </section>
+
+            <!-- MISSING AND FOUND -->
+            <section class="animal-board">
+
+                <div class="animal-panel">
+                    <h3>Reported Missing Domestic Animals</h3>
+
+                    <?php
+                    $hasMissing = false;
+                    foreach ($missingAnimals as $animal):
+                        $hasMissing = true;
+                    ?>
+                        <div class="animal-item">
+                            <img src="<?= htmlspecialchars($animal['image'] ?? '../assets/images/bg.jpg') ?>" alt="missing animal">
+                            <div>
+                                <strong><?= htmlspecialchars($animal['animal'] ?? 'Domestic Animal') ?></strong>
+                                <p><?= htmlspecialchars($animal['location'] ?? 'Location not provided') ?></p>
+                                <p><?= htmlspecialchars($animal['description'] ?? '') ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <?php if (!$hasMissing): ?>
+                        <div class="empty-note">No approved missing animal reports yet.</div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="animal-panel">
+                    <h3>Domestic Animals Found by the Community</h3>
+
+                    <?php
+                    $hasFound = false;
+                    foreach ($foundAnimals as $animal):
+                        $hasFound = true;
+                    ?>
+                        <div class="animal-item">
+                            <img src="<?= htmlspecialchars($animal['image'] ?? '../assets/images/bg.jpg') ?>" alt="found animal">
+                            <div>
+                                <strong><?= htmlspecialchars($animal['animal'] ?? 'Domestic Animal') ?></strong>
+                                <p><?= htmlspecialchars($animal['location'] ?? 'Location not provided') ?></p>
+                                <p><?= htmlspecialchars($animal['description'] ?? '') ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <?php if (!$hasFound): ?>
+                        <div class="empty-note">No approved found animal reports yet.</div>
+                    <?php endif; ?>
                 </div>
 
             </section>
@@ -102,12 +219,9 @@ $events = $db->events->find(
                 <div class="footer-box">
                     <h3>About ARS</h3>
                     <p>
-                        The Animal Rescue System (ARS) is dedicated to the rescue,
-                        rehabilitation, and rehoming of animals in need. Together with our
-                        partners and community, we strive to build a humane and compassionate
-                        society for all animals.
+                        The Animal Rescue System (ARS) helps the community report missing domestic animals, share found domestic animals, and support rescue or surrender cases. Our goal is to connect reports with responders and help animals return to safe care.
                     </p>
-                    <a href="about.php" class="learn-more">Learn more about us →</a>
+                    <a href="about.php" class="learn-more">Learn more about us -></a>
                 </div>
 
                 <!-- NEWS -->
@@ -132,18 +246,18 @@ $events = $db->events->find(
                 <div class="footer-box">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#">Impact Reports</a></li>
-                        <li><a href="#">Team</a></li>
-                        <li><a href="#">Gallery</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="report.php">Report Missing Animal</a></li>
+                        <li><a href="report.php">Report Found Animal</a></li>
+                        <li><a href="surrender.php">Surrender Support</a></li>
+                        <li><a href="resources.php">Care Resources</a></li>
+                        <li><a href="about.php">Contact Us</a></li>
                     </ul>
                 </div>
 
                 <!-- CONTACT -->
                 <div class="footer-box">
                     <h3>Stay Connected</h3>
-                    <p>Follow us for updates and animal stories.</p>
+                    <p>Follow us for missing and found animal updates.</p>
 
                     <div class="socials">
                         <i class="fa-brands fa-facebook"></i>
