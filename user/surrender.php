@@ -10,14 +10,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $animal = trim($_POST['animal']);
     $reason = trim($_POST['reason']);
     $location = trim($_POST['location']);
-    $animalCategory = $_POST['animal_category'] ?? '';
+    $animalCategory = 'wildlife';
 
     $lat = $_POST['latitude'] ?? '';
     $lng = $_POST['longitude'] ?? '';
 
-    if (!in_array($animalCategory, ['domestic', 'wildlife'], true)) {
-        $message = "Please choose if this is a domestic or wildlife animal.";
-    } elseif (empty($owner) || empty($contact) || empty($location)) {
+    if (empty($owner) || empty($contact) || empty($location)) {
         $message = "Name, contact, and location are required!";
     } elseif (!preg_match('/^09\d{9}$/', $contact)) {
         $message = "Phone number must start with 09 and be 11 digits.";
@@ -57,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Surrender Animal - ARS</title>
+    <title>Surrender Wildlife Animal - ARS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- MAIN CSS -->
@@ -92,7 +90,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .form-group input,
-        .form-group select,
         .form-group textarea {
             padding: 12px;
             border-radius: 8px;
@@ -100,7 +97,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .form-group input:focus,
-        .form-group select:focus,
         .form-group textarea:focus {
             border-color: #2d6a4f;
             outline: none;
@@ -178,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="header">
                 <button onclick="toggleSidebar()" class="menu-btn">☰</button>
-                <h1>Surrender a Domestic or Wildlife Animal</h1>
+                <h1>Surrender a Wildlife Animal</h1>
             </div>
 
             <div class="form-box">
@@ -189,8 +185,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 <?php endif; ?>
 
-                <p><strong>Click on the map to select the animal location</strong></p>
-                <p>Use this form for domestic animals or wildlife currently in your care that you cannot feed, house, or safely keep.</p>
+                <p><strong>Click on the map to select the wildlife location</strong></p>
+                <p>Use this form only for wildlife currently in your care that you cannot feed, house, or safely keep.</p>
 
                 <div id="map"></div>
 
@@ -207,17 +203,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <div class="form-group">
-                        <label>Animal Category</label>
-                        <select name="animal_category" required>
-                            <option value="">Select animal category</option>
-                            <option value="domestic">Domestic Animal</option>
-                            <option value="wildlife">Wildlife Animal</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Animal Type</label>
-                        <input type="text" name="animal" placeholder="Example: dog, cat, bird, monkey" required>
+                        <label>Wildlife Type</label>
+                        <input type="text" name="animal" placeholder="Example: bird, monkey, snake" required>
                     </div>
 
                     <div class="form-group">
@@ -239,7 +226,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="hidden" name="longitude" id="lng">
 
                     <button type="submit" class="submit-btn">
-                        <i class="fa-solid fa-paper-plane"></i> Submit Surrender
+                        <i class="fa-solid fa-paper-plane"></i> Submit Wildlife Surrender
                     </button>
 
                 </form>
