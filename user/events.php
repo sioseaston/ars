@@ -21,7 +21,6 @@
         <a href="dashboard.php"><i class="fa-solid fa-house"></i> Dashboard</a>
         <a href="report.php"><i class="fa-solid fa-flag"></i> Report</a>
         <a href="surrender.php"><i class="fa-solid fa-hand"></i> Surrender</a>
-        <a href="adopt.php"><i class="fa-solid fa-heart"></i> Adopt</a>
         <a href="events.php" class="active"><i class="fa-solid fa-calendar"></i> Events</a>
         <a href="resources.php"><i class="fa-solid fa-book"></i> Resources</a>
         <a href="about.php"><i class="fa-solid fa-circle-info"></i> About</a>
@@ -42,10 +41,10 @@
                 <!-- EVENT 1 -->
                 <div class="box">
                     <img src="../assets/images/event1.jpg" style="width:100%; border-radius:10px; margin-bottom:10px;">
-                    <h3>Adoption Drive</h3>
+                    <h3>Missing Animal Reporting Drive</h3>
                     <p>📍 Puerto Princesa</p>
                     <p>📅 July 15, 2026</p>
-                    <p>Join us in finding loving homes for rescued animals.</p>
+                    <p>Join us in helping residents report missing and found domestic animals.</p>
                 </div>
 
                 <!-- EVENT 2 -->
