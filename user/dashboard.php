@@ -1,7 +1,7 @@
 <?php 
 require '../db.php';
 
-// ================= ORIGINAL LOGIC (UNCHANGED) =================
+// COUNTS
 $rescued = $db->reports->countDocuments(['status' => 'approved']);
 $missingReports = $db->reports->countDocuments(['report_type' => 'missing']);
 $foundReports = $db->reports->countDocuments(['report_type' => 'found']);
@@ -23,7 +23,11 @@ $wildlifeAnimals = $db->reports->find(
     ['sort' => ['created_at' => -1], 'limit' => 3]
 );
 
-$events = $db->events->find([], ['sort' => ['_id' => -1], 'limit' => 2]);
+// 🔥 EVENTS (for Latest News)
+$events = $db->events->find(
+    [],
+    ['sort' => ['_id' => -1], 'limit' => 2]
+);
 ?>
 
 <!DOCTYPE html>
@@ -35,262 +39,295 @@ $events = $db->events->find([], ['sort' => ['_id' => -1], 'limit' => 2]);
 
 <link rel="stylesheet" href="../assets/css/dashboard.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
 <style>
-body { font-family: 'Inter', sans-serif; }
-
-/* TOPBAR */
-.topbar {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:white;
-    padding:15px 25px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.05);
-    border-radius:10px;
-    margin-bottom:20px;
-}
-
-/* HERO CLEAN */
-.hero-modern {
-    background: linear-gradient(135deg,#2d6a4f,#1b4332);
-    color:white;
-    padding:25px;
-    border-radius:15px;
-    margin-bottom:20px;
-}
-
-/* STATS */
-.stats-modern {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:20px;
-    margin-bottom:25px;
-}
-
-.stat-card {
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.05);
-    transition:0.2s;
-}
-
-.stat-card:hover {
-    transform:translateY(-3px);
-}
-
-.stat-card h3 {
-    margin:0;
-    font-size:26px;
-}
-
-.stat-card p {
-    color:#777;
-}
-
-/* PANELS */
 .animal-board {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-    gap:20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 25px;
 }
 
 .animal-panel {
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.animal-panel h3 {
+    margin-top: 0;
+    color: #1b4332;
 }
 
 .animal-item {
-    display:flex;
-    gap:12px;
-    margin-top:15px;
-    align-items:center;
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid #edf2ef;
 }
 
 .animal-item img {
-    width:80px;
-    height:80px;
-    border-radius:10px;
-    object-fit:cover;
-    cursor:pointer;
+    width: 78px;
+    height: 78px;
+    border-radius: 10px;
+    object-fit: cover;
 }
 
 .animal-item strong {
-    display:block;
+    display: block;
+    color: #1b4332;
+}
+
+.animal-item p {
+    margin: 4px 0;
+    color: #555;
 }
 
 .empty-note {
-    margin-top:10px;
-    color:#777;
+    background: #f4f6f5;
+    border-radius: 10px;
+    padding: 14px;
+    color: #555;
 }
 
-/* FOOTER GRID */
-.footer-grid {
-    margin-top:30px;
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
+@media (max-width: 1100px) {
+    .animal-board {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-.footer-box {
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.05);
-}
-
-/* MODAL */
-.modal {
-    display:none;
-    position:fixed;
-    background:rgba(0,0,0,0.8);
-    top:0; left:0;
-    width:100%; height:100%;
-    justify-content:center;
-    align-items:center;
-}
-
-.modal img {
-    max-width:90%;
-    border-radius:10px;
+@media (max-width: 768px) {
+    .animal-board {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 </head>
-
 <body>
 
 <div class="layout">
 
-<!-- SIDEBAR (UNCHANGED) -->
-<div class="sidebar">
-    <h2><i class="fa-solid fa-paw"></i> ARS</h2>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2><i class="fa-solid fa-paw"></i> ARS</h2>
 
-    <a href="dashboard.php" class="active"><i class="fa-solid fa-house"></i> Dashboard</a>
-    <a href="report.php"><i class="fa-solid fa-flag"></i> Report</a>
-    <a href="surrender.php"><i class="fa-solid fa-hand"></i> Surrender</a>
-    <a href="events.php"><i class="fa-solid fa-calendar"></i> Events</a>
-    <a href="resources.php"><i class="fa-solid fa-book"></i> Resources</a>
-    <a href="about.php"><i class="fa-solid fa-circle-info"></i> About</a>
-</div>
+        <a href="dashboard.php" class="active"><i class="fa-solid fa-house"></i> Dashboard</a>
+        <a href="report.php"><i class="fa-solid fa-flag"></i> Report</a>
+        <a href="surrender.php"><i class="fa-solid fa-hand"></i> Surrender</a>
+        <a href="events.php"><i class="fa-solid fa-calendar"></i> Events</a>
+        <a href="resources.php"><i class="fa-solid fa-book"></i> Resources</a>
+        <a href="about.php"><i class="fa-solid fa-circle-info"></i> About</a>
+    </div>
 
-<div class="main">
-<div class="container">
+    <!-- MAIN -->
+    <div class="main">
+        <div class="container">
 
-<!-- TOPBAR -->
-<div class="topbar">
-    <h2>Dashboard</h2>
-    <div>👤 Admin</div>
-</div>
+            <!-- HEADER -->
+            <div class="header">
+                <h1>Animal Rescue System</h1>
+            </div>
 
-<!-- HERO -->
-<div class="hero-modern">
-    <h2>Animal Rescue System</h2>
-    <p>Monitor reports, track rescued animals, and manage cases efficiently.</p>
-</div>
+            <!-- HERO -->
+            <section class="hero">
+                <div class="overlay">
+                    <h2>Report Domestic and Wildlife Animals</h2>
+                    <p>Help report missing or found domestic animals, wildlife near homes, and wildlife in critical condition.</p>
+                </div>
+            </section>
 
-<!-- STATS -->
-<div class="stats-modern">
-    <div class="stat-card"><h3><?= $rescued ?></h3><p>Animals Helped</p></div>
-    <div class="stat-card"><h3><?= $missingReports ?></h3><p>Missing Reports</p></div>
-    <div class="stat-card"><h3><?= $foundReports ?></h3><p>Found Reports</p></div>
-    <div class="stat-card"><h3><?= $wildlifeReports ?></h3><p>Wildlife Reports</p></div>
-    <div class="stat-card"><h3><?= $pendingReports ?></h3><p>Pending Cases</p></div>
-</div>
+            <!-- STATS -->
+            <section class="stats">
 
-<!-- PANELS -->
-<div class="animal-board">
+                <div class="card">
+                    <div class="icon"><i class="fa-solid fa-paw"></i></div>
+                    <div>
+                        <h3><?= $rescued ?></h3>
+                        <p>Animals Helped</p>
+                    </div>
+                </div>
 
-<!-- MISSING -->
-<div class="animal-panel">
-<h3>Missing Animals</h3>
-<?php $hasMissing=false; foreach($missingAnimals as $a): $hasMissing=true; ?>
-<div class="animal-item">
-<img src="<?= $a['image'] ?>" onclick="openModal('<?= $a['image'] ?>')">
-<div>
-<strong><?= $a['animal'] ?></strong>
-<p><?= $a['location'] ?></p>
-</div>
-</div>
-<?php endforeach; ?>
-<?php if(!$hasMissing): ?><div class="empty-note">No data</div><?php endif; ?>
-</div>
+                <div class="card">
+                    <div class="icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+                    <div>
+                        <h3><?= $missingReports ?></h3>
+                        <p>Missing Reports</p>
+                    </div>
+                </div>
 
-<!-- FOUND -->
-<div class="animal-panel">
-<h3>Found Animals</h3>
-<?php $hasFound=false; foreach($foundAnimals as $a): $hasFound=true; ?>
-<div class="animal-item">
-<img src="<?= $a['image'] ?>" onclick="openModal('<?= $a['image'] ?>')">
-<div>
-<strong><?= $a['animal'] ?></strong>
-<p><?= $a['location'] ?></p>
-</div>
-</div>
-<?php endforeach; ?>
-<?php if(!$hasFound): ?><div class="empty-note">No data</div><?php endif; ?>
-</div>
+                <div class="card">
+                    <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
+                    <div>
+                        <h3><?= $foundReports ?></h3>
+                        <p>Found Reports</p>
+                    </div>
+                </div>
 
-<!-- WILDLIFE -->
-<div class="animal-panel">
-<h3>Wildlife Reports</h3>
-<?php $hasWild=false; foreach($wildlifeAnimals as $a): $hasWild=true; ?>
-<div class="animal-item">
-<img src="<?= $a['image'] ?>" onclick="openModal('<?= $a['image'] ?>')">
-<div>
-<strong><?= $a['animal'] ?></strong>
-<p><?= $a['location'] ?></p>
-</div>
-</div>
-<?php endforeach; ?>
-<?php if(!$hasWild): ?><div class="empty-note">No data</div><?php endif; ?>
-</div>
+                <div class="card">
+                    <div class="icon"><i class="fa-solid fa-tree"></i></div>
+                    <div>
+                        <h3><?= $wildlifeReports ?></h3>
+                        <p>Wildlife Reports</p>
+                    </div>
+                </div>
 
-</div>
+                <div class="card">
+                    <div class="icon"><i class="fa-solid fa-clipboard"></i></div>
+                    <div>
+                        <h3><?= $pendingReports ?></h3>
+                        <p>Pending Cases</p>
+                    </div>
+                </div>
 
-<!-- FOOTER -->
-<div class="footer-grid">
+            </section>
 
-<div class="footer-box">
-<h3>About ARS</h3>
-<p>Community-driven reporting system for domestic and wildlife rescue.</p>
-</div>
+            <!-- MISSING AND FOUND -->
+            <section class="animal-board">
 
-<div class="footer-box">
-<h3>Latest Events</h3>
-<?php foreach($events as $e): ?>
-<p><strong><?= $e['title'] ?></strong></p>
-<?php endforeach; ?>
-</div>
+                <div class="animal-panel">
+                    <h3>Reported Missing Domestic Animals</h3>
 
-<div class="footer-box">
-<h3>Quick Links</h3>
-<p>Report • Surrender • Resources</p>
-</div>
+                    <?php
+                    $hasMissing = false;
+                    foreach ($missingAnimals as $animal):
+                        $hasMissing = true;
+                    ?>
+                        <div class="animal-item">
+                            <img src="<?= htmlspecialchars($animal['image'] ?? '../assets/images/bg.jpg') ?>" alt="missing animal">
+                            <div>
+                                <strong><?= htmlspecialchars($animal['animal'] ?? 'Domestic Animal') ?></strong>
+                                <p><?= htmlspecialchars($animal['location'] ?? 'Location not provided') ?></p>
+                                <p><?= htmlspecialchars($animal['description'] ?? '') ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
 
-</div>
+                    <?php if (!$hasMissing): ?>
+                        <div class="empty-note">No approved missing animal reports yet.</div>
+                    <?php endif; ?>
+                </div>
 
-</div>
-</div>
-</div>
+                <div class="animal-panel">
+                    <h3>Domestic Animals Found by the Community</h3>
 
-<!-- MODAL -->
-<div class="modal" id="modal" onclick="closeModal()">
-<img id="modalImg">
-</div>
+                    <?php
+                    $hasFound = false;
+                    foreach ($foundAnimals as $animal):
+                        $hasFound = true;
+                    ?>
+                        <div class="animal-item">
+                            <img src="<?= htmlspecialchars($animal['image'] ?? '../assets/images/bg.jpg') ?>" alt="found animal">
+                            <div>
+                                <strong><?= htmlspecialchars($animal['animal'] ?? 'Domestic Animal') ?></strong>
+                                <p><?= htmlspecialchars($animal['location'] ?? 'Location not provided') ?></p>
+                                <p><?= htmlspecialchars($animal['description'] ?? '') ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
 
-<script>
-function openModal(src){
-document.getElementById("modal").style.display="flex";
-document.getElementById("modalImg").src=src;
-}
-function closeModal(){
-document.getElementById("modal").style.display="none";
-}
-</script>
+                    <?php if (!$hasFound): ?>
+                        <div class="empty-note">No approved found animal reports yet.</div>
+                    <?php endif; ?>
+                </div>
+
+                <div class="animal-panel">
+                    <h3>Wildlife Reports</h3>
+
+                    <?php
+                    $hasWildlife = false;
+                    foreach ($wildlifeAnimals as $animal):
+                        $hasWildlife = true;
+                        $wildlifeStatus = ($animal['report_type'] ?? '') === 'wildlife_critical' ? 'Critical condition' : 'Found near home/community';
+                    ?>
+                        <div class="animal-item">
+                            <img src="<?= htmlspecialchars($animal['image'] ?? '../assets/images/bg.jpg') ?>" alt="wildlife animal">
+                            <div>
+                                <strong><?= htmlspecialchars($animal['animal'] ?? 'Wildlife Animal') ?></strong>
+                                <p><?= htmlspecialchars($wildlifeStatus) ?></p>
+                                <p><?= htmlspecialchars($animal['location'] ?? 'Location not provided') ?></p>
+                                <p><?= htmlspecialchars($animal['description'] ?? '') ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <?php if (!$hasWildlife): ?>
+                        <div class="empty-note">No approved wildlife reports yet.</div>
+                    <?php endif; ?>
+                </div>
+
+            </section>
+
+            <!-- FOOTER GRID -->
+            <section class="footer-grid">
+
+                <!-- ABOUT -->
+                <div class="footer-box">
+                    <h3>About ARS</h3>
+                    <p>
+                        The Animal Rescue System (ARS) helps the community report domestic animals, wildlife found near homes, wildlife in critical condition, and wildlife surrender cases. Our goal is to connect reports with responders and help animals return to safe care.
+                    </p>
+                    <a href="about.php" class="learn-more">Learn more about us -></a>
+                </div>
+
+                <!-- NEWS -->
+                <div class="footer-box">
+                    <div class="title-row">
+                        <h3>Latest News & Events</h3>
+                        <a href="events.php">View All</a>
+                    </div>
+
+                    <?php foreach ($events as $event): ?>
+                        <div class="news-item">
+                            <img src="../assets/images/bg.jpg" alt="event">
+                            <div>
+                                <strong><?= htmlspecialchars($event['title'] ?? 'Event') ?></strong>
+                                <p><?= htmlspecialchars($event['description'] ?? '') ?></p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <!-- LINKS -->
+                <div class="footer-box">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="report.php">Report Missing Domestic Animal</a></li>
+                        <li><a href="report.php">Report Found Domestic Animal</a></li>
+                        <li><a href="report.php">Report Wildlife Animal</a></li>
+                        <li><a href="surrender.php">Surrender Wildlife Animal</a></li>
+                        <li><a href="resources.php">Care Resources</a></li>
+                        <li><a href="about.php">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- CONTACT -->
+                <div class="footer-box">
+                    <h3>Stay Connected</h3>
+                    <p>Follow us for domestic and wildlife animal updates.</p>
+
+                    <div class="socials">
+                        <i class="fa-brands fa-facebook"></i>
+                        <i class="fa-brands fa-instagram"></i>
+                        <i class="fa-brands fa-twitter"></i>
+                        <i class="fa-brands fa-youtube"></i>
+                    </div>
+
+                    <div class="hotline">
+                        <p><strong>Contact No</strong></p>
+                        <p>0945 889 8099</p>
+                        <p>0992 673 8491</p>
+
+                        <!-- ✅ EMAIL ADDED -->
+                        <p><strong>Email</strong></p>
+                        <p>pwrcc.pawb@gmail.com</p>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
