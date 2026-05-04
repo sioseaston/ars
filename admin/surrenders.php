@@ -27,13 +27,13 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     exit;
 }
 
-$surrenders = $collection->find([], ['sort' => ['created_at' => -1]]);
+$surrenders = $collection->find(['animal_category' => 'wildlife'], ['sort' => ['created_at' => -1]]);
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-<title>Manage Surrenders</title>
+<title>Manage Wildlife Surrenders</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ICONS -->
@@ -187,7 +187,7 @@ img{
         <div class="menu">
             <a href="dashboard.php"><i class="fas fa-chart-bar"></i> Dashboard</a>
             <a href="reports.php"><i class="fas fa-flag"></i> Manage Reports</a>
-            <a href="surrenders.php" class="active"><i class="fas fa-box"></i> Manage Surrenders</a>
+            <a href="surrenders.php" class="active"><i class="fas fa-box"></i> Manage Wildlife Surrenders</a>
             <a href="adoptions.php"><i class="fas fa-heart"></i> Manage Adoptions</a>
             <a href="events.php"><i class="fas fa-calendar"></i> Manage Events</a>
         </div>
@@ -203,15 +203,16 @@ img{
 <div class="main">
 <div class="container">
 
-<h2>🐾 Surrender Requests</h2>
+<h2>🐾 Wildlife Surrender Requests</h2>
 
 <?php foreach ($surrenders as $s): ?>
 <div class="card">
 
     <h3><?= $s['animal'] ?? 'Unknown Animal' ?></h3>
 
-    <p><strong>Owner:</strong> <?= $s['owner'] ?? 'N/A' ?></p>
+    <p><strong>Citizen / Owner:</strong> <?= $s['owner'] ?? 'N/A' ?></p>
     <p><strong>Contact:</strong> <?= $s['contact'] ?? 'N/A' ?></p>
+    <p><strong>Category:</strong> <?= ucwords(str_replace('_', ' ', $s['animal_category'] ?? 'wildlife')) ?></p>
 
     <p><strong>Location:</strong> <?= $s['location'] ?? 'No location provided' ?></p>
 
