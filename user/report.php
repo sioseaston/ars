@@ -10,11 +10,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $animal = trim($_POST['animal']);
     $location = trim($_POST['location']);
     $description = trim($_POST['description']);
+    $reportType = $_POST['report_type'] ?? '';
 
     $lat = $_POST['latitude'] ?? '';
     $lng = $_POST['longitude'] ?? '';
 
-    if (empty($name) || empty($contact) || empty($location)) {
+    if (!in_array($reportType, ['missing', 'found'], true)) {
+        $message = "Please choose if the animal is missing or found.";
+    } elseif (empty($name) || empty($contact) || empty($location)) {
         $message = "Name, contact, and location are required!";
     } elseif (!preg_match('/^09\d{9}$/', $contact)) {
         $message = "Phone number must start with 09 and be 11 digits.";
@@ -35,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'name' => $name,
             'contact' => $contact,
             'animal' => $animal,
+            'report_type' => $reportType,
             'location' => $location,
             'description' => $description,
             'image' => $uploadPath,
@@ -88,6 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .form-group input,
+        .form-group select,
         .form-group textarea {
             padding: 12px;
             border-radius: 8px;
@@ -96,6 +101,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .form-group input:focus,
+        .form-group select:focus,
         .form-group textarea:focus {
             border-color: #2d6a4f;
             outline: none;
@@ -185,7 +191,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <a href="dashboard.php"><i class="fa-solid fa-house"></i> Dashboard</a>
         <a href="report.php" class="active"><i class="fa-solid fa-flag"></i> Report</a>
         <a href="surrender.php"><i class="fa-solid fa-hand"></i> Surrender</a>
-        <a href="adopt.php"><i class="fa-solid fa-heart"></i> Adopt</a>
         <a href="events.php"><i class="fa-solid fa-calendar"></i> Events</a>
         <a href="resources.php"><i class="fa-solid fa-book"></i> Resources</a>
         <a href="about.php"><i class="fa-solid fa-circle-info"></i> About</a>
@@ -197,7 +202,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <div class="header">
                 <button onclick="toggleSidebar()" class="menu-btn">☰</button>
-                <h1>Report an Animal</h1>
+                <h1>Report a Missing or Found Animal</h1>
             </div>
 
             <div class="form-box">
@@ -225,8 +230,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <div class="form-group">
+                        <label>Report Type</label>
+                        <select name="report_type" required>
+                            <option value="">Select report type</option>
+                            <option value="missing">Missing Domestic Animal</option>
+                            <option value="found">Found Domestic Animal</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label>Animal Type</label>
-                        <input type="text" name="animal" required>
+                        <input type="text" name="animal" placeholder="Example: Dog, cat, rabbit" required>
                     </div>
 
                     <div class="form-group">
@@ -235,7 +249,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <div class="form-group">
-                        <label>Description</label>
+                        <label>Description / Identifying Details</label>
                         <textarea name="description" required></textarea>
                     </div>
 
