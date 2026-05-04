@@ -21,7 +21,6 @@
         <a href="dashboard.php"><i class="fa-solid fa-house"></i> Dashboard</a>
         <a href="report.php"><i class="fa-solid fa-flag"></i> Report</a>
         <a href="surrender.php"><i class="fa-solid fa-hand"></i> Surrender</a>
-        <a href="adopt.php"><i class="fa-solid fa-heart"></i> Adopt</a>
         <a href="events.php"><i class="fa-solid fa-calendar"></i> Events</a>
         <a href="resources.php"><i class="fa-solid fa-book"></i> Resources</a>
         <a href="about.php" class="active"><i class="fa-solid fa-circle-info"></i> About</a>
@@ -43,8 +42,8 @@
                 <div class="box">
                     <p>
                         The Animal Rescue System (ARS) is a web-based platform designed to help
-                        report, rescue, and rehome animals in need. It connects the community
-                        with rescue teams and promotes responsible animal care.
+                        report missing domestic animals, share found domestic animals, and support rescue or surrender cases. It connects the community
+                        with responders and promotes responsible animal care.
                     </p>
                 </div>
 
@@ -53,7 +52,7 @@
                     <h2>🎯 Our Mission</h2>
                     <p>
                         To provide a reliable system that enables quick reporting and response
-                        for animals in danger while promoting adoption and awareness.
+                        for missing, found, and at-risk domestic animals while promoting awareness and responsible care.
                     </p>
                 </div>
 
@@ -62,7 +61,7 @@
                     <h2>🌍 Our Vision</h2>
                     <p>
                         To create a compassionate community where every animal is protected,
-                        cared for, and given a chance for a better life.
+                        cared for, and reunited with safe homes whenever possible.
                     </p>
                 </div>
 
