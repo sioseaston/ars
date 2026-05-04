@@ -264,7 +264,7 @@ $events = $db->events->find(
                 <div class="footer-box">
                     <h3>About ARS</h3>
                     <p>
-                        The Animal Rescue System (ARS) helps the community report domestic animals, wildlife found near homes, wildlife in critical condition, and surrender cases. Our goal is to connect reports with responders and help animals return to safe care.
+                        The Animal Rescue System (ARS) helps the community report domestic animals, wildlife found near homes, wildlife in critical condition, and wildlife surrender cases. Our goal is to connect reports with responders and help animals return to safe care.
                     </p>
                     <a href="about.php" class="learn-more">Learn more about us -></a>
                 </div>
@@ -294,7 +294,7 @@ $events = $db->events->find(
                         <li><a href="report.php">Report Missing Domestic Animal</a></li>
                         <li><a href="report.php">Report Found Domestic Animal</a></li>
                         <li><a href="report.php">Report Wildlife Animal</a></li>
-                        <li><a href="surrender.php">Surrender Domestic or Wildlife Animal</a></li>
+                        <li><a href="surrender.php">Surrender Wildlife Animal</a></li>
                         <li><a href="resources.php">Care Resources</a></li>
                         <li><a href="about.php">Contact Us</a></li>
                     </ul>
