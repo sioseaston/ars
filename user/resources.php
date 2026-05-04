@@ -49,7 +49,7 @@
                 <div class="box">
                     <h3>🏠 Missing Animal Reports</h3>
                     <p>
-                        Share clear photos, last-seen locations, and identifying marks to help reunite animals with their owners.
+                        Share clear photos, last-seen locations, and identifying marks to help reunite domestic animals with their owners.
                     </p>
                 </div>
 
@@ -72,8 +72,7 @@
                 <div class="box">
                     <h3>🌿 Wildlife Safety</h3>
                     <p>
-                        Do not disturb wild animals. Report sightings
-                        to authorities or rescue organizations.
+                        Do not touch or keep wildlife unless needed for safety. Report wildlife near homes, trapped animals, or animals in critical condition immediately.
                     </p>
                 </div>
 
