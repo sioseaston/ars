@@ -4,6 +4,7 @@ require '../db.php';
 
 $collection = $db->reports;
 
+/* ACTIONS */
 if (isset($_GET['action']) && isset($_GET['id'])) {
     $id = new MongoDB\BSON\ObjectId($_GET['id']);
 
@@ -25,85 +26,85 @@ $reports = $collection->find([], ['sort' => ['created_at' => -1]]);
 $total = $collection->countDocuments();
 $pending = $collection->countDocuments(['status'=>'pending']);
 $approved = $collection->countDocuments(['status'=>'approved']);
+$rejected = $collection->countDocuments(['status'=>'rejected']);
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-<title>Reports</title>
+<title>Reports Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
 
-/* GLOBAL */
+/* ===== GLOBAL ===== */
+*{box-sizing:border-box}
 body{
     margin:0;
     font-family:'Segoe UI';
     background:#f4f6f5;
 }
 
-/* MAIN */
+/* ===== SIDEBAR ===== */
+.sidebar{
+    width:260px;
+    height:100vh;
+    position:fixed;
+    background:linear-gradient(180deg,#1b4332,#2d6a4f);
+    color:white;
+    padding:20px;
+}
+
+.sidebar a{
+    display:block;
+    padding:10px;
+    margin:5px 0;
+    border-radius:10px;
+    color:white;
+    text-decoration:none;
+}
+.sidebar a.active{background:rgba(255,255,255,.25)}
+
+/* ===== MAIN ===== */
 .main{
     margin-left:260px;
     padding:25px;
 }
 
-/* HEADER */
-.header{
-    margin-bottom:20px;
-}
-
-/* STATS */
+/* ===== STATS ===== */
 .stats{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-    gap:15px;
-    margin-bottom:20px;
+    gap:20px;
 }
 
-.stat{
-    background:white;
-    padding:15px;
-    border-radius:14px;
-}
-
-/* REPORT CARD */
-.report{
-    display:flex;
-    gap:15px;
+.card{
     background:white;
     padding:18px;
     border-radius:16px;
-    margin-bottom:15px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+    box-shadow:0 5px 15px rgba(0,0,0,.05);
 }
 
-.report img{
-    width:200px;
-    height:130px;
-    object-fit:cover;
-    border-radius:10px;
+/* ===== GRID ===== */
+.grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+    margin-top:20px;
 }
 
-/* DETAILS */
-.details h3{
-    margin:0;
-    color:#2d6a4f;
-}
-
+/* ===== META ===== */
 .meta{
     font-size:13px;
     color:#666;
 }
 
-/* BADGES */
+/* ===== BADGES ===== */
 .badge{
     padding:5px 10px;
-    border-radius:20px;
+    border-radius:12px;
     font-size:12px;
 }
 
@@ -114,63 +115,100 @@ body{
 .domestic{background:#e6f4ea;color:#2d6a4f;}
 .wildlife{background:#fdebd0;color:#e67e22;}
 
-/* MAP */
-.map{
-    width:200px;
-    height:120px;
-    border-radius:10px;
-}
-
-/* ACTIONS */
-.actions{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
+/* ===== BUTTONS ===== */
 .btn{
-    padding:8px;
-    border-radius:6px;
+    padding:8px 12px;
+    border-radius:8px;
     color:white;
     text-decoration:none;
-    text-align:center;
+    display:inline-block;
+    margin-top:5px;
 }
 
 .approve{background:#2d6a4f;}
 .reject{background:#d00000;}
+
+img{
+    width:100%;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+    .sidebar{display:none;}
+    .main{margin-left:0;}
+    .grid{grid-template-columns:1fr;}
+}
 
 </style>
 </head>
 
 <body>
 
+<!-- SIDEBAR -->
+<div class="sidebar">
+<h2>🐾 ARSS</h2>
+
+<a href="dashboard.php">Dashboard</a>
+<a href="reports.php" class="active">Reports</a>
+<a href="surrenders.php">Surrenders</a>
+<a href="adoptions.php">Adoptions</a>
+<a href="history.php">Activity Logs</a>
+<a href="events.php">Events</a>
+
+<br>
+<a href="logout.php">Logout</a>
+</div>
+
+<!-- MAIN -->
 <div class="main">
 
-<div class="header">
-<h2>📋 Reports Dashboard</h2>
+<h1>Reports Dashboard</h1>
 <p>Manage and review submitted reports</p>
-</div>
 
 <!-- STATS -->
 <div class="stats">
-<div class="stat">Total Reports<br><strong><?= $total ?></strong></div>
-<div class="stat">Pending<br><strong><?= $pending ?></strong></div>
-<div class="stat">Approved<br><strong><?= $approved ?></strong></div>
+
+<div class="card">
+<h4>Total Reports</h4>
+<h2><?= $total ?></h2>
 </div>
 
-<!-- REPORTS -->
+<div class="card">
+<h4>Pending</h4>
+<h2><?= $pending ?></h2>
+</div>
+
+<div class="card">
+<h4>Approved</h4>
+<h2><?= $approved ?></h2>
+</div>
+
+<div class="card">
+<h4>Rejected</h4>
+<h2><?= $rejected ?></h2>
+</div>
+
+</div>
+
+<!-- GRID -->
+<div class="grid">
+
+<!-- LEFT -->
+<div>
+
 <?php foreach ($reports as $report): ?>
 
-<div class="report">
+<div class="card" style="margin-bottom:15px;">
 
-<img src="<?= $report['image'] ?>" onclick="openImage('<?= $report['image'] ?>')">
+<img src="<?= $report['image'] ?>">
 
-<div class="details">
 <h3><?= $report['animal'] ?></h3>
 
-<div class="meta">
+<p class="meta">
 <?= $report['name'] ?> • <?= $report['contact'] ?>
-</div>
+</p>
 
 <p><?= $report['description'] ?></p>
 
@@ -182,16 +220,10 @@ body{
 <?= ucfirst($report['animal_category'] ?? 'Domestic') ?>
 </span>
 
-</div>
+<br><br>
 
-<div class="map"
-onclick="openMap(<?= $report['latitude'] ?>, <?= $report['longitude'] ?>)">
-</div>
-
-<div class="actions">
 <a href="?action=approve&id=<?= $report['_id'] ?>" class="btn approve">Approve</a>
 <a href="?action=reject&id=<?= $report['_id'] ?>" class="btn reject">Reject</a>
-</div>
 
 </div>
 
@@ -199,16 +231,38 @@ onclick="openMap(<?= $report['latitude'] ?>, <?= $report['longitude'] ?>)">
 
 </div>
 
-<script>
-function openImage(src){
-    alert("Image preview: " + src);
-}
+<!-- RIGHT -->
+<div>
 
-function openMap(lat,lng){
-    alert("Map location: "+lat+","+lng);
-}
-</script>
+<div class="card">
+<h3>Quick Insights</h3>
+<p>Pending Reports: <?= $pending ?></p>
+<p>Approved Reports: <?= $approved ?></p>
+<p>Rejected Reports: <?= $rejected ?></p>
+<p>Total Reports: <?= $total ?></p>
+</div>
+
+<br>
+
+<div class="card">
+<h3>Case Tagging</h3>
+<span class="badge domestic">Domestic Cases</span><br><br>
+<span class="badge wildlife">Wildlife Cases</span>
+</div>
+
+<br>
+
+<div class="card">
+<h3>Escalation System</h3>
+<p>Reassign misclassified reports</p>
+<button>Go to Reassignment</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
 
 </body>
 </html>
-```
