@@ -4,177 +4,88 @@ require '../db.php';
 
 $collection = $db->events;
 
-/* ADD EVENT */
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $collection->insertOne([
-        'title' => $_POST['title'],
-        'location' => $_POST['location'],
-        'date' => $_POST['date'],
-        'description' => $_POST['description'],
-        'created_at' => new MongoDB\BSON\UTCDateTime()
-    ]);
+if ($_SERVER["REQUEST_METHOD"]=="POST"){
+    $collection->insertOne($_POST);
 }
 
-/* DELETE EVENT */
-if (isset($_GET['delete'])) {
-    $collection->deleteOne([
-        '_id' => new MongoDB\BSON\ObjectId($_GET['delete'])
-    ]);
+if(isset($_GET['delete'])){
+    $collection->deleteOne(['_id'=>new MongoDB\BSON\ObjectId($_GET['delete'])]);
 }
 
-$events = iterator_to_array($collection->find([]));
-
-/* GROUP EVENTS BY DATE */
-$calendarEvents = [];
-foreach ($events as $e) {
-    $calendarEvents[$e['date']][] = $e;
-}
-
-$today = date('Y-m-d');
+$events=$collection->find([],['sort'=>['_id'=>-1]]);
+$total=$collection->countDocuments();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-<title>Advanced Events</title>
+<title>Events</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-
-body{
-    font-family:'Segoe UI';
-    margin:0;
-    background:#f4f6f5;
-}
-
-.main{
-    margin-left:260px;
-    padding:20px;
-}
-
-/* FORM */
-.form{
-    background:white;
-    padding:20px;
-    border-radius:12px;
-    margin-bottom:20px;
-}
-
-input, textarea{
-    width:100%;
-    padding:10px;
-    margin-bottom:10px;
-    border-radius:8px;
-    border:1px solid #ddd;
-}
-
-button{
-    background:#2d6a4f;
-    color:white;
-    padding:10px;
-    border:none;
-    border-radius:8px;
-}
-
-/* CALENDAR */
-.calendar{
-    display:grid;
-    grid-template-columns:repeat(7,1fr);
-    gap:10px;
-}
-
-.day{
-    background:white;
-    padding:10px;
-    border-radius:10px;
-    min-height:100px;
-    position:relative;
-}
-
-.today{
-    border:2px solid #2d6a4f;
-}
-
-/* EVENT */
-.event{
-    background:#2d6a4f;
-    color:white;
-    padding:4px;
-    border-radius:6px;
-    font-size:11px;
-    margin-top:5px;
-}
-
-/* STATUS */
-.status{
-    font-size:11px;
-    margin-top:5px;
-}
-
-.upcoming{color:#2d6a4f;}
-.ongoing{color:orange;}
-.completed{color:#999;}
-
+body{margin:0;font-family:'Segoe UI';background:#f4f6f5;}
+.sidebar{width:260px;height:100vh;position:fixed;background:linear-gradient(#1b4332,#2d6a4f);color:white;padding:20px;}
+.sidebar a{display:block;color:white;padding:10px;margin:5px 0;border-radius:10px;text-decoration:none;}
+.sidebar a.active{background:rgba(255,255,255,.25);}
+.main{margin-left:260px;padding:25px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;}
+.card{background:white;padding:18px;border-radius:16px;box-shadow:0 5px 15px rgba(0,0,0,.05);}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-top:20px;}
 </style>
 </head>
 
 <body>
 
+<div class="sidebar">
+<h2>🐾 ARSS</h2>
+<a href="dashboard.php">Dashboard</a>
+<a href="reports.php">Reports</a>
+<a href="events.php" class="active">Events</a>
+<a href="logout.php">Logout</a>
+</div>
+
 <div class="main">
 
-<h2>📅 Event Management System</h2>
+<h1>Events Dashboard</h1>
 
-<!-- FORM -->
-<form method="POST" class="form">
-<input type="text" name="title" placeholder="Event Title" required>
-<input type="text" name="location" placeholder="Location" required>
-<input type="date" name="date" required>
-<textarea name="description" placeholder="Description"></textarea>
-<button>Add Event</button>
+<div class="stats">
+<div class="card"><h4>Total Events</h4><h2><?= $total ?></h2></div>
+</div>
+
+<div class="grid">
+
+<div>
+
+<div class="card" style="margin-bottom:20px;">
+<h3>Add Event</h3>
+<form method="POST">
+<input name="title" placeholder="Title"><br>
+<input name="location" placeholder="Location"><br>
+<input type="date" name="date"><br>
+<textarea name="description"></textarea><br>
+<button>Add</button>
 </form>
+</div>
 
-<!-- CALENDAR -->
-<div class="calendar">
-
-<?php
-for ($i = 1; $i <= 31; $i++):
-$date = date('Y-m-') . str_pad($i,2,'0',STR_PAD_LEFT);
-?>
-
-<div class="day <?= $date == $today ? 'today' : '' ?>">
-
-<strong><?= $i ?></strong>
-
-<?php if(isset($calendarEvents[$date])): ?>
-    <?php foreach($calendarEvents[$date] as $e): ?>
-
-        <?php
-        $status = "upcoming";
-        if($date == $today) $status = "ongoing";
-        if($date < $today) $status = "completed";
-        ?>
-
-        <div class="event">
-            <?= $e['title'] ?>
-        </div>
-
-        <div class="status <?= $status ?>">
-            <?= strtoupper($status) ?>
-        </div>
-
-        <a href="?delete=<?= $e['_id'] ?>" style="font-size:10px;color:red;">Delete</a>
-
-    <?php endforeach; ?>
-<?php endif; ?>
+<?php foreach($events as $e): ?>
+<div class="card" style="margin-bottom:15px;">
+<h3><?= $e['title'] ?></h3>
+<p><?= $e['location'] ?></p>
+<p><?= $e['date'] ?></p>
+<p><?= $e['description'] ?></p>
+<a href="?delete=<?= $e['_id'] ?>">Delete</a>
+</div>
+<?php endforeach; ?>
 
 </div>
 
-<?php endfor; ?>
-
+<div class="card">
+<h3>Overview</h3>
+<p>Total Events: <?= $total ?></p>
 </div>
 
 </div>
 
+</div>
 </body>
 </html>
-```
