@@ -2,8 +2,6 @@
 require '../includes/auth.php';
 require '../db.php';
 
-session_start();
-
 /* ===== ROLE FILTER FUNCTION ===== */
 function getRoleFilter() {
 
