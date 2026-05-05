@@ -5,29 +5,26 @@ require '../db.php';
 /* ===== TOTALS ===== */
 $totalReports = $db->reports->countDocuments();
 $totalSurrenders = $db->surrenders->countDocuments();
-$totalAdoptions = $db->adoptions->countDocuments();
-$totalCases = $totalReports + $totalSurrenders + $totalAdoptions;
 
-/* SAMPLE SPLIT (REPLACE WITH REAL DATA LATER) */
+/* REMOVE ADOPTIONS */
+$totalCases = $totalReports + $totalSurrenders;
+
+/* SAMPLE SPLIT */
 $domesticReports = floor($totalReports * 0.7);
 $wildlifeReports = $totalReports - $domesticReports;
 
 $domesticSurrenders = floor($totalSurrenders * 0.7);
 $wildlifeSurrenders = $totalSurrenders - $domesticSurrenders;
 
-$domesticAdoptions = floor($totalAdoptions * 0.7);
-$wildlifeAdoptions = $totalAdoptions - $domesticAdoptions;
-
-$domesticCases = $domesticReports + $domesticSurrenders + $domesticAdoptions;
+$domesticCases = $domesticReports + $domesticSurrenders;
 $wildlifeCases = $totalCases - $domesticCases;
 
-/* STATUS COUNTS */
+/* STATUS */
 $r_pending = $db->reports->countDocuments(['status'=>'pending']);
 $r_approved = $db->reports->countDocuments(['status'=>'approved']);
 $r_rejected = $db->reports->countDocuments(['status'=>'rejected']);
 
 $s_pending = $db->surrenders->countDocuments(['status'=>'pending']);
-$a_pending = $db->adoptions->countDocuments(['status'=>'pending']);
 ?>
 
 <!DOCTYPE html>
@@ -40,149 +37,24 @@ $a_pending = $db->adoptions->countDocuments(['status'=>'pending']);
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-
-/* ===== GLOBAL ===== */
-*{box-sizing:border-box}
-body{
-    margin:0;
-    font-family:'Segoe UI',sans-serif;
-    background:#f4f6f5;
-}
-
-/* ===== SIDEBAR ===== */
-.sidebar{
-    width:260px;
-    height:100vh;
-    position:fixed;
-    background:linear-gradient(180deg,#1b4332,#2d6a4f);
-    color:white;
-    padding:20px;
-}
-
-.sidebar h2{margin:0}
-.sidebar p{font-size:12px;opacity:.7}
-
-.sidebar a{
-    display:block;
-    padding:10px;
-    margin:5px 0;
-    border-radius:10px;
-    color:white;
-    text-decoration:none;
-}
-.sidebar a.active{background:rgba(255,255,255,.25)}
-
-.section-title{
-    font-size:11px;
-    margin-top:15px;
-    opacity:.7;
-}
-
-/* ===== MAIN ===== */
-.main{
-    margin-left:260px;
-    padding:25px;
-}
-
-/* ===== TOPBAR ===== */
-.topbar{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-}
-
-.search{
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #ddd;
-}
-
-.profile{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.profile img{
-    width:35px;
-    border-radius:50%;
-}
-
-/* ===== STATS ===== */
-.stats{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-    gap:20px;
-}
-
-.card{
-    background:white;
-    padding:18px;
-    border-radius:16px;
-    box-shadow:0 5px 15px rgba(0,0,0,.05);
-}
-
-.icon{
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
+body{margin:0;font-family:'Segoe UI';background:#f4f6f5;}
+.sidebar{width:260px;height:100vh;position:fixed;background:linear-gradient(#1b4332,#2d6a4f);color:white;padding:20px;}
+.sidebar a{display:block;padding:10px;margin:5px 0;border-radius:10px;color:white;text-decoration:none;}
+.sidebar a.active{background:rgba(255,255,255,.25);}
+.main{margin-left:260px;padding:25px;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;}
+.card{background:white;padding:18px;border-radius:16px;box-shadow:0 5px 15px rgba(0,0,0,.05);}
+.icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .green{background:#e6f4ea;color:#2d6a4f}
 .orange{background:#fdebd0;color:#e67e22}
-.red{background:#fde2e2;color:#e74c3c}
 .blue{background:#e3f2fd;color:#3498db}
-
-/* ===== GRID ===== */
-.grid{
-    display:grid;
-    grid-template-columns:2fr 1fr;
-    gap:20px;
-    margin-top:20px;
-}
-
-.grid2{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:20px;
-    margin-top:20px;
-}
-
-/* ===== BADGES ===== */
-.badge{
-    padding:5px 10px;
-    border-radius:12px;
-    font-size:11px;
-}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-top:20px;}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-top:20px;}
+.badge{padding:5px 10px;border-radius:12px;font-size:11px;}
 .domestic{background:#e6f4ea;color:#2d6a4f}
 .wildlife{background:#fdebd0;color:#e67e22}
-
-/* ===== ALERT ===== */
-.alert{
-    background:#fff3cd;
-    padding:15px;
-    border-radius:12px;
-    margin-top:10px;
-}
-
-button{
-    background:#2d6a4f;
-    color:white;
-    border:none;
-    padding:10px;
-    border-radius:8px;
-}
-
-@media(max-width:768px){
-    .sidebar{display:none;}
-    .main{margin-left:0;}
-    .grid{grid-template-columns:1fr;}
-}
-
+.alert{background:#fff3cd;padding:15px;border-radius:12px;margin-top:10px;}
+button{background:#2d6a4f;color:white;border:none;padding:10px;border-radius:8px;}
 </style>
 </head>
 
@@ -191,25 +63,12 @@ button{
 <!-- SIDEBAR -->
 <div class="sidebar">
 <h2>🐾 ARSS</h2>
-<p>Animal Rescue Support System</p>
 
-<div class="section-title">MAIN MENU</div>
 <a class="active">Dashboard</a>
 <a href="reports.php">Reports</a>
 <a href="surrenders.php">Surrenders</a>
-<a href="adoptions.php">Adoptions</a>
 <a href="history.php">Activity Logs</a>
 <a href="events.php">Events</a>
-
-<div class="section-title">ROLE & ACCESS</div>
-<div class="card" style="background:rgba(255,255,255,0.1);color:white;">
-Domestic Admin<br>
-<small>Domestic Only</small>
-</div>
-
-<div class="section-title">ADMIN TOOLS</div>
-<a>Case Reassignment</a>
-<a>Analytics</a>
 
 <br>
 <a href="logout.php">Logout</a>
@@ -217,18 +76,6 @@ Domestic Admin<br>
 
 <!-- MAIN -->
 <div class="main">
-
-<div class="topbar">
-<input class="search" placeholder="Search here...">
-
-<div class="profile">
-<img src="https://i.pravatar.cc/40">
-<div>
-<strong>Admin</strong><br>
-<small>Domestic Admin</small>
-</div>
-</div>
-</div>
 
 <h1>Admin Dashboard</h1>
 
@@ -239,33 +86,23 @@ Domestic Admin<br>
 <div class="icon green"><i class="fas fa-file"></i></div>
 <h3>Total Reports</h3>
 <h2><?= $totalReports ?></h2>
-<small>Domestic: <?= $domesticReports ?> | Wildlife: <?= $wildlifeReports ?></small>
 </div>
 
 <div class="card">
 <div class="icon orange"><i class="fas fa-box"></i></div>
 <h3>Total Surrenders</h3>
 <h2><?= $totalSurrenders ?></h2>
-<small>Domestic: <?= $domesticSurrenders ?> | Wildlife: <?= $wildlifeSurrenders ?></small>
-</div>
-
-<div class="card">
-<div class="icon red"><i class="fas fa-heart"></i></div>
-<h3>Total Adoptions</h3>
-<h2><?= $totalAdoptions ?></h2>
-<small>Domestic: <?= $domesticAdoptions ?> | Wildlife: <?= $wildlifeAdoptions ?></small>
 </div>
 
 <div class="card">
 <div class="icon blue"><i class="fas fa-chart-line"></i></div>
 <h3>Total Cases</h3>
 <h2><?= $totalCases ?></h2>
-<small>Domestic: <?= $domesticCases ?> | Wildlife: <?= $wildlifeCases ?></small>
 </div>
 
 </div>
 
-<!-- CHARTS -->
+<!-- CHART -->
 <div class="grid">
 
 <div class="card">
@@ -287,29 +124,19 @@ Domestic Admin<br>
 <h3>Quick Insights</h3>
 <p>Pending Reports: <?= $r_pending ?></p>
 <p>Pending Surrenders: <?= $s_pending ?></p>
-<p>Pending Adoptions: <?= $a_pending ?></p>
-<p>Total Active Cases: <?= $totalCases ?></p>
+<p>Total Cases: <?= $totalCases ?></p>
 </div>
 
 <div class="card">
 <h3>Recent Activity</h3>
 <p>New report submitted</p>
 <p>New surrender request</p>
-<p>New adoption application</p>
 </div>
 
 <div class="card">
-<h3>Case Tagging Overview</h3>
-
+<h3>Case Tagging</h3>
 <span class="badge domestic">Domestic <?= $domesticCases ?></span><br><br>
 <span class="badge wildlife">Wildlife <?= $wildlifeCases ?></span>
-
-<div class="alert">
-<p><strong>Escalation System</strong></p>
-<p>Reassign misclassified cases</p>
-<button>Go to Reassignment</button>
-</div>
-
 </div>
 
 </div>
@@ -317,7 +144,6 @@ Domestic Admin<br>
 </div>
 
 <script>
-
 new Chart(rChart,{
 type:'bar',
 data:{
@@ -340,7 +166,6 @@ backgroundColor:['#2d6a4f','#f39c12']
 }]
 }
 });
-
 </script>
 
 </body>
