@@ -1,5 +1,6 @@
 <?php
 session_start();
+require '../db.php';
 
 $error = "";
 
@@ -8,10 +9,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    if ($username == "admin" && $password == "1234") {
+    /* FIND USER IN DATABASE */
+    $user = $db->users->findOne(['username' => $username]);
+
+    if ($user && password_verify($password, $user['password'])) {
+
         $_SESSION['admin'] = true;
+        $_SESSION['role'] = $user['role']; // 🔥 IMPORTANT
+        $_SESSION['user_id'] = (string)$user['_id'];
+
         header("Location: dashboard.php");
         exit;
+
     } else {
         $error = "Invalid login credentials!";
     }
