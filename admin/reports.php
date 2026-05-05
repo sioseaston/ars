@@ -32,13 +32,17 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
     exit;
 }
 
-$reports = $collection->find([], ['sort' => ['created_at' => -1]]);
+$filter = getRoleFilter();
+$reports = $collection->find($filter, ['sort'=>['created_at'=>-1]]);
 
 /* COUNTS */
-$total = $collection->countDocuments();
-$pending = $collection->countDocuments(['status'=>'pending']);
-$approved = $collection->countDocuments(['status'=>'approved']);
-$rejected = $collection->countDocuments(['status'=>'rejected']);
+$filter = getRoleFilter();
+
+$totalReports = $db->reports->countDocuments($filter);
+$totalSurrenders = $db->surrenders->countDocuments($filter);
+
+$r_pending = $db->reports->countDocuments(array_merge($filter, ['status'=>'pending']));
+$s_pending = $db->surrenders->countDocuments(array_merge($filter, ['status'=>'pending']));
 ?>
 
 <!DOCTYPE html>
