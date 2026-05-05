@@ -2,13 +2,13 @@
 require '../includes/auth.php';
 require '../db.php';
 
-/* TOTALS */
+/* ===== TOTALS ===== */
 $totalReports = $db->reports->countDocuments();
 $totalSurrenders = $db->surrenders->countDocuments();
 $totalAdoptions = $db->adoptions->countDocuments();
 $totalCases = $totalReports + $totalSurrenders + $totalAdoptions;
 
-/* SAMPLE SPLIT (replace later with real field) */
+/* SAMPLE SPLIT (REPLACE WITH REAL DATA LATER) */
 $domesticReports = floor($totalReports * 0.7);
 $wildlifeReports = $totalReports - $domesticReports;
 
@@ -21,18 +21,13 @@ $wildlifeAdoptions = $totalAdoptions - $domesticAdoptions;
 $domesticCases = $domesticReports + $domesticSurrenders + $domesticAdoptions;
 $wildlifeCases = $totalCases - $domesticCases;
 
-/* STATUS */
+/* STATUS COUNTS */
 $r_pending = $db->reports->countDocuments(['status'=>'pending']);
 $r_approved = $db->reports->countDocuments(['status'=>'approved']);
 $r_rejected = $db->reports->countDocuments(['status'=>'rejected']);
 
 $s_pending = $db->surrenders->countDocuments(['status'=>'pending']);
-$s_approved = $db->surrenders->countDocuments(['status'=>'approved']);
-$s_rejected = $db->surrenders->countDocuments(['status'=>'rejected']);
-
 $a_pending = $db->adoptions->countDocuments(['status'=>'pending']);
-$a_approved = $db->adoptions->countDocuments(['status'=>'approved']);
-$a_rejected = $db->adoptions->countDocuments(['status'=>'rejected']);
 ?>
 
 <!DOCTYPE html>
@@ -46,24 +41,26 @@ $a_rejected = $db->adoptions->countDocuments(['status'=>'rejected']);
 
 <style>
 
-/* GLOBAL */
+/* ===== GLOBAL ===== */
+*{box-sizing:border-box}
 body{
     margin:0;
-    font-family:'Segoe UI';
+    font-family:'Segoe UI',sans-serif;
     background:#f4f6f5;
 }
 
-/* SIDEBAR */
+/* ===== SIDEBAR ===== */
 .sidebar{
     width:260px;
     height:100vh;
+    position:fixed;
     background:linear-gradient(180deg,#1b4332,#2d6a4f);
     color:white;
-    position:fixed;
     padding:20px;
 }
-.sidebar h2{margin:0;}
-.sidebar p{font-size:12px;opacity:0.7;}
+
+.sidebar h2{margin:0}
+.sidebar p{font-size:12px;opacity:.7}
 
 .sidebar a{
     display:block;
@@ -73,51 +70,74 @@ body{
     color:white;
     text-decoration:none;
 }
-.sidebar a.active{background:rgba(255,255,255,0.2);}
+.sidebar a.active{background:rgba(255,255,255,.25)}
 
-/* MAIN */
+.section-title{
+    font-size:11px;
+    margin-top:15px;
+    opacity:.7;
+}
+
+/* ===== MAIN ===== */
 .main{
     margin-left:260px;
     padding:25px;
 }
 
-/* TOPBAR */
+/* ===== TOPBAR ===== */
 .topbar{
     display:flex;
     justify-content:space-between;
     align-items:center;
+    margin-bottom:20px;
 }
 
 .search{
     padding:10px;
     border-radius:8px;
     border:1px solid #ddd;
-    width:250px;
 }
 
 .profile{
     display:flex;
-    gap:10px;
     align-items:center;
+    gap:10px;
 }
 
-/* STATS */
+.profile img{
+    width:35px;
+    border-radius:50%;
+}
+
+/* ===== STATS ===== */
 .stats{
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
     gap:20px;
-    margin-top:20px;
 }
 
 .card{
     background:white;
-    padding:20px;
+    padding:18px;
     border-radius:16px;
+    box-shadow:0 5px 15px rgba(0,0,0,.05);
 }
 
-.card small{color:#777;}
+.icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
 
-/* GRID */
+.green{background:#e6f4ea;color:#2d6a4f}
+.orange{background:#fdebd0;color:#e67e22}
+.red{background:#fde2e2;color:#e74c3c}
+.blue{background:#e3f2fd;color:#3498db}
+
+/* ===== GRID ===== */
 .grid{
     display:grid;
     grid-template-columns:2fr 1fr;
@@ -125,29 +145,28 @@ body{
     margin-top:20px;
 }
 
-/* LOWER GRID */
 .grid2{
     display:grid;
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
     gap:20px;
     margin-top:20px;
 }
 
-/* BADGE */
+/* ===== BADGES ===== */
 .badge{
     padding:5px 10px;
     border-radius:12px;
     font-size:11px;
 }
+.domestic{background:#e6f4ea;color:#2d6a4f}
+.wildlife{background:#fdebd0;color:#e67e22}
 
-.domestic{background:#e6f4ea;color:#2d6a4f;}
-.wildlife{background:#fdebd0;color:#e67e22;}
-
-/* ESCALATION */
+/* ===== ALERT ===== */
 .alert{
     background:#fff3cd;
     padding:15px;
     border-radius:12px;
+    margin-top:10px;
 }
 
 button{
@@ -156,7 +175,12 @@ button{
     border:none;
     padding:10px;
     border-radius:8px;
-    margin-top:10px;
+}
+
+@media(max-width:768px){
+    .sidebar{display:none;}
+    .main{margin-left:0;}
+    .grid{grid-template-columns:1fr;}
 }
 
 </style>
@@ -166,44 +190,44 @@ button{
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-    <h2>🐾 ARSS</h2>
-    <p>Animal Rescue Support System</p>
+<h2>🐾 ARSS</h2>
+<p>Animal Rescue Support System</p>
 
-    <hr>
+<div class="section-title">MAIN MENU</div>
+<a class="active">Dashboard</a>
+<a href="reports.php">Reports</a>
+<a href="surrenders.php">Surrenders</a>
+<a href="adoptions.php">Adoptions</a>
+<a href="history.php">Activity Logs</a>
+<a href="events.php">Events</a>
 
-    <a class="active">Dashboard</a>
-    <a>Reports</a>
-    <a>Surrenders</a>
-    <a>Adoptions</a>
-    <a>Activity Logs</a>
-    <a>Events</a>
+<div class="section-title">ROLE & ACCESS</div>
+<div class="card" style="background:rgba(255,255,255,0.1);color:white;">
+Domestic Admin<br>
+<small>Domestic Only</small>
+</div>
 
-    <hr>
+<div class="section-title">ADMIN TOOLS</div>
+<a>Case Reassignment</a>
+<a>Analytics</a>
 
-    <strong>ROLE & ACCESS</strong>
-    <div class="card" style="background:rgba(255,255,255,0.1);margin-top:10px;">
-        Domestic Admin<br>
-        <small>Access: Domestic Only</small>
-    </div>
-
-    <hr>
-
-    <strong>ADMIN TOOLS</strong>
-    <a>Case Reassignment</a>
-    <a>Analytics</a>
+<br>
+<a href="logout.php">Logout</a>
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-<!-- TOPBAR -->
 <div class="topbar">
-    <input class="search" placeholder="Search here...">
+<input class="search" placeholder="Search here...">
 
-    <div class="profile">
-        <strong>Admin</strong>
-        <small>Domestic Admin</small>
-    </div>
+<div class="profile">
+<img src="https://i.pravatar.cc/40">
+<div>
+<strong>Admin</strong><br>
+<small>Domestic Admin</small>
+</div>
+</div>
 </div>
 
 <h1>Admin Dashboard</h1>
@@ -212,25 +236,29 @@ button{
 <div class="stats">
 
 <div class="card">
-<h4>Total Reports</h4>
+<div class="icon green"><i class="fas fa-file"></i></div>
+<h3>Total Reports</h3>
 <h2><?= $totalReports ?></h2>
 <small>Domestic: <?= $domesticReports ?> | Wildlife: <?= $wildlifeReports ?></small>
 </div>
 
 <div class="card">
-<h4>Total Surrenders</h4>
+<div class="icon orange"><i class="fas fa-box"></i></div>
+<h3>Total Surrenders</h3>
 <h2><?= $totalSurrenders ?></h2>
 <small>Domestic: <?= $domesticSurrenders ?> | Wildlife: <?= $wildlifeSurrenders ?></small>
 </div>
 
 <div class="card">
-<h4>Total Adoptions</h4>
+<div class="icon red"><i class="fas fa-heart"></i></div>
+<h3>Total Adoptions</h3>
 <h2><?= $totalAdoptions ?></h2>
 <small>Domestic: <?= $domesticAdoptions ?> | Wildlife: <?= $wildlifeAdoptions ?></small>
 </div>
 
 <div class="card">
-<h4>Total Cases</h4>
+<div class="icon blue"><i class="fas fa-chart-line"></i></div>
+<h3>Total Cases</h3>
 <h2><?= $totalCases ?></h2>
 <small>Domestic: <?= $domesticCases ?> | Wildlife: <?= $wildlifeCases ?></small>
 </div>
@@ -272,11 +300,13 @@ button{
 
 <div class="card">
 <h3>Case Tagging Overview</h3>
+
 <span class="badge domestic">Domestic <?= $domesticCases ?></span><br><br>
 <span class="badge wildlife">Wildlife <?= $wildlifeCases ?></span>
 
 <div class="alert">
-<p>Escalation System</p>
+<p><strong>Escalation System</strong></p>
+<p>Reassign misclassified cases</p>
 <button>Go to Reassignment</button>
 </div>
 
@@ -288,7 +318,6 @@ button{
 
 <script>
 
-/* BAR */
 new Chart(rChart,{
 type:'bar',
 data:{
@@ -301,7 +330,6 @@ backgroundColor:['#2d6a4f','#4CAF50','#d00000']
 }
 });
 
-/* PIE */
 new Chart(pieChart,{
 type:'doughnut',
 data:{
