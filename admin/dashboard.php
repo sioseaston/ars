@@ -38,11 +38,10 @@ $a_rejected = $db->adoptions->countDocuments(['status'=>'rejected','created_at'=
 
 /* RESET */
 *{box-sizing:border-box;}
-
 body{
     margin:0;
     font-family:'Segoe UI', sans-serif;
-    background:linear-gradient(to right,#f4f6f5,#eef2ef);
+    background:#f4f6f5;
 }
 
 /* SIDEBAR */
@@ -56,124 +55,77 @@ body{
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-    transition:0.3s;
-    z-index:1000;
 }
 
-.logo{
-    font-size:clamp(18px,2vw,22px);
-    font-weight:bold;
-    margin-bottom:25px;
-}
-
+/* MENU */
 .menu{
     display:flex;
     flex-direction:column;
     gap:10px;
 }
-
 .menu a{
     display:flex;
     align-items:center;
-    gap:12px;
+    gap:10px;
     padding:12px;
-    border-radius:12px;
+    border-radius:10px;
     color:white;
     text-decoration:none;
 }
+.menu a.active{
+    background:rgba(255,255,255,0.2);
+}
 
-.menu a:hover{background:rgba(255,255,255,0.15);}
-.menu .active{background:rgba(255,255,255,0.25);}
+/* TITLES */
+.menu-title{
+    font-size:11px;
+    opacity:0.7;
+    margin-top:15px;
+}
+
+/* ROLE CARD */
+.role-card{
+    background:rgba(255,255,255,0.1);
+    padding:12px;
+    border-radius:12px;
+    margin-top:10px;
+}
 
 /* MAIN */
 .main{
     margin-left:260px;
-    padding:clamp(15px,2vw,30px);
-    min-height:100vh;
-    transition:0.3s;
-}
-
-.container{
-    max-width:1400px;
-    margin:auto;
-}
-
-/* TEXT */
-h1{
-    font-size:clamp(20px,3vw,32px);
+    padding:25px;
 }
 
 /* GRID */
-.stats,.charts,.insight-grid{
+.stats, .charts{
     display:grid;
     gap:20px;
 }
-
 .stats{grid-template-columns:repeat(auto-fit,minmax(250px,1fr));}
 .charts{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
-.insight-grid{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
 
 /* CARDS */
-.stat,.chart-card,.insights{
+.card{
     background:white;
-    border-radius:18px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.05);
-}
-
-.stat{
     padding:20px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+    border-radius:16px;
 }
 
-.chart-card,.insights{
-    padding:20px;
+/* BADGES */
+.badge{
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:8px;
+    font-size:11px;
 }
-
-/* ICON */
-.icon{
-    padding:12px;
-    border-radius:50%;
-}
-
-.green{background:#e6f4ea;color:#2d6a4f;}
-.orange{background:#fdebd0;color:#e67e22;}
-.red{background:#fde2e2;color:#e74c3c;}
-
-.tag{
-    font-size:12px;
-    background:#eef2ef;
-    padding:6px 10px;
-    border-radius:10px;
-}
-
-/* CHART */
-canvas{
-    width:100% !important;
-    height:220px !important;
-}
-
-/* TABLET */
-@media(max-width:1024px){
-    .sidebar{width:220px;}
-    .main{margin-left:220px;}
-}
+.domestic{background:#e6f4ea;color:#2d6a4f;}
+.wildlife{background:#fdebd0;color:#e67e22;}
 
 /* MOBILE */
 @media(max-width:768px){
-    .sidebar{left:-260px;}
-    .sidebar.active{left:0;}
+    .sidebar{display:none;}
     .main{margin-left:0;}
-    .stats,.charts,.insight-grid{grid-template-columns:1fr;}
-}
-
-/* SMALL MOBILE */
-@media(max-width:480px){
-    .stat{
-        flex-direction:column;
-        align-items:flex-start;
-    }
 }
 
 </style>
@@ -181,131 +133,112 @@ canvas{
 
 <body>
 
-<!-- MOBILE MENU BUTTON -->
-<button onclick="toggleMenu()" style="
-position:fixed;
-top:15px;
-left:15px;
-z-index:1100;
-background:#2d6a4f;
-color:white;
-border:none;
-padding:10px;
-border-radius:8px;">
-☰
-</button>
-
 <div class="sidebar">
+
     <div>
-        <div class="logo"><i class="fas fa-paw"></i> ARSS</div>
+        <h2>🐾 ARSS</h2>
 
         <div class="menu">
-            <a class="active"><i class="fas fa-chart-bar"></i> Dashboard</a>
-            <a href="reports.php"><i class="fas fa-flag"></i> Reports</a>
-            <a href="surrenders.php"><i class="fas fa-box"></i> Surrenders</a>
-            <a href="history.php"><i class="fas fa-clock"></i> Activity Logs</a>
-            <a href="events.php"><i class="fas fa-calendar"></i> Events</a>
+
+            <div class="menu-title">MAIN MENU</div>
+            <a class="active">Dashboard</a>
+            <a href="reports.php">Reports</a>
+            <a href="surrenders.php">Surrenders</a>
+            <a href="history.php">Activity Logs</a>
+            <a href="events.php">Events</a>
+
+            <div class="menu-title">ROLE & ACCESS</div>
+
+            <div class="role-card">
+                <strong>Domestic Admin</strong><br>
+                <small>Access: Domestic Animals Only</small>
+            </div>
+
+            <div class="menu-title">ADMIN TOOLS</div>
+
+            <a href="#">Case Reassignment</a>
+            <a href="#">Analytics</a>
+
         </div>
     </div>
 
-    <a href="logout.php" class="logout">
-        <i class="fas fa-sign-out-alt"></i> Logout
-    </a>
+    <a href="logout.php">Logout</a>
+
 </div>
 
 <div class="main">
-<div class="container">
 
-<div class="top">
-    <p>Welcome back, Admin 👋</p>
-    <h1>Admin Dashboard</h1>
-</div>
+<h1>Admin Dashboard</h1>
 
+<!-- STATS -->
 <div class="stats">
 
-<div class="stat">
-<div class="stat-left">
-<div class="icon green">📄</div>
-<div>
-<p>Total Reports</p>
-<h2><?= $totalReports ?></h2>
-</div>
-</div>
-<div class="tag">All time</div>
+<div class="card">
+    <p>Total Reports</p>
+    <h2><?= $totalReports ?></h2>
+    <span class="badge domestic">Domestic</span>
 </div>
 
-<div class="stat">
-<div class="stat-left">
-<div class="icon orange">📦</div>
-<div>
-<p>Total Surrenders</p>
-<h2><?= $totalSurrenders ?></h2>
-</div>
-</div>
-<div class="tag">All time</div>
+<div class="card">
+    <p>Total Surrenders</p>
+    <h2><?= $totalSurrenders ?></h2>
+    <span class="badge wildlife">Wildlife</span>
 </div>
 
-<div class="stat">
-<div class="stat-left">
-<div class="icon red">❤️</div>
-<div>
-<p>Total Adoptions</p>
-<h2><?= $totalAdoptions ?></h2>
-</div>
-</div>
-<div class="tag">All time</div>
+<div class="card">
+    <p>Total Adoptions</p>
+    <h2><?= $totalAdoptions ?></h2>
 </div>
 
 </div>
 
+<!-- CHARTS -->
 <div class="charts">
 
-<div class="chart-card">
-<h3>Reports (This Month)</h3>
+<div class="card">
+<h3>Reports</h3>
 <canvas id="rChart"></canvas>
 </div>
 
-<div class="chart-card">
-<h3>Surrenders (This Month)</h3>
+<div class="card">
+<h3>Surrenders</h3>
 <canvas id="sChart"></canvas>
 </div>
 
-<div class="chart-card">
-<h3>Adoptions (This Month)</h3>
+<div class="card">
+<h3>Adoptions</h3>
 <canvas id="aChart"></canvas>
 </div>
 
 </div>
 
-<div class="insights">
-<h3>Quick Insights</h3>
-
-<div class="insight-grid">
-<div class="insight">Pending Reports: <?= $r_pending ?></div>
-<div class="insight">Pending Surrenders: <?= $s_pending ?></div>
-<div class="insight">Pending Adoptions: <?= $a_pending ?></div>
-</div>
-
-</div>
-
-</div>
 </div>
 
 <script>
-function toggleMenu(){
-    document.querySelector('.sidebar').classList.toggle('active');
-}
 
 const options={scales:{y:{beginAtZero:true}}};
 
-new Chart(rChart,{type:'bar',data:{labels:['Pending','Approved','Rejected'],
-datasets:[{data:[<?= $r_pending ?>,<?= $r_approved ?>,<?= $r_rejected ?>]}]},options});
+new Chart(rChart,{
+type:'bar',
+data:{
+labels:['Pending','Approved','Rejected'],
+datasets:[{data:[<?= $r_pending ?>,<?= $r_approved ?>,<?= $r_rejected ?>]}]
+}});
 
-new Chart(sChart,{type:'bar',data:{labels:['Pending','Approved','Rejected'],
-datasets:[{data:[<?= $s_pending ?>,<?= $s_approved ?>,<?= $s_rejected ?>]}]},options});
+new Chart(sChart,{
+type:'bar',
+data:{
+labels:['Pending','Approved','Rejected'],
+datasets:[{data:[<?= $s_pending ?>,<?= $s_approved ?>,<?= $s_rejected ?>]}]
+}});
 
-new Chart(aChart,{type:'bar',data:{labels:['Pending','Approved','Rejected'],
-datasets:[{data:[<?= $a_pending ?>,<?= $a_approved ?>,<?= $a_rejected ?>]}]},options});
+new Chart(aChart,{
+type:'bar',
+data:{
+labels:['Pending','Approved','Rejected'],
+datasets:[{data:[<?= $a_pending ?>,<?= $a_approved ?>,<?= $a_rejected ?>]}]
+}});
+
 </script>
 
 </body>
