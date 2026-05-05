@@ -1,28 +1,22 @@
+
 <?php
 require '../includes/auth.php';
 require '../db.php';
 
-/* DATE RANGE */
-$start = new MongoDB\BSON\UTCDateTime(strtotime(date('Y-m-01 00:00:00')) * 1000);
-$end   = new MongoDB\BSON\UTCDateTime(strtotime(date('Y-m-t 23:59:59')) * 1000);
-
-/* TOTAL */
+/* TOTALS */
 $totalReports = $db->reports->countDocuments();
 $totalSurrenders = $db->surrenders->countDocuments();
 $totalAdoptions = $db->adoptions->countDocuments();
+$totalCases = $totalReports + $totalSurrenders + $totalAdoptions;
+
+/* SAMPLE SPLIT (you can later make real DB fields) */
+$domesticCases = floor($totalCases * 0.7);
+$wildlifeCases = $totalCases - $domesticCases;
 
 /* MONTH DATA */
-$r_pending = $db->reports->countDocuments(['status'=>'pending','created_at'=>['$gte'=>$start,'$lte'=>$end]]);
-$r_approved = $db->reports->countDocuments(['status'=>'approved','created_at'=>['$gte'=>$start,'$lte'=>$end]]);
-$r_rejected = $db->reports->countDocuments(['status'=>'rejected','created_at'=>['$gte'=>$start,'$lte'=>$end]]);
-
-$s_pending = $db->surrenders->countDocuments(['status'=>'pending','created_at'=>['$gte'=>$start,'$lte'=>$end]]);
-$s_approved = $db->surrenders->countDocuments(['status'=>'approved','created_at'=>['$gte'=>$start,'$lte'=>$end]]);
-$s_rejected = $db->surrenders->countDocuments(['status'=>'rejected','created_at'=>['$gte'=>$start,'$lte'=>$end]]);
-
-$a_pending = $db->adoptions->countDocuments(['status'=>'pending','created_at'=>['$gte'=>$start,'$lte'=>$end]]);
-$a_approved = $db->adoptions->countDocuments(['status'=>'approved','created_at'=>['$gte'=>$start,'$lte'=>$end]]);
-$a_rejected = $db->adoptions->countDocuments(['status'=>'rejected','created_at'=>['$gte'=>$start,'$lte'=>$end]]);
+$r_pending = $db->reports->countDocuments(['status'=>'pending']);
+$r_approved = $db->reports->countDocuments(['status'=>'approved']);
+$r_rejected = $db->reports->countDocuments(['status'=>'rejected']);
 ?>
 
 <!DOCTYPE html>
@@ -36,11 +30,10 @@ $a_rejected = $db->adoptions->countDocuments(['status'=>'rejected','created_at'=
 
 <style>
 
-/* RESET */
-*{box-sizing:border-box;}
+/* GLOBAL */
 body{
     margin:0;
-    font-family:'Segoe UI', sans-serif;
+    font-family:'Segoe UI';
     background:#f4f6f5;
 }
 
@@ -50,45 +43,8 @@ body{
     height:100vh;
     background:linear-gradient(180deg,#1b4332,#2d6a4f);
     color:white;
-    padding:20px;
     position:fixed;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-}
-
-/* MENU */
-.menu{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-.menu a{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:12px;
-    border-radius:10px;
-    color:white;
-    text-decoration:none;
-}
-.menu a.active{
-    background:rgba(255,255,255,0.2);
-}
-
-/* TITLES */
-.menu-title{
-    font-size:11px;
-    opacity:0.7;
-    margin-top:15px;
-}
-
-/* ROLE CARD */
-.role-card{
-    background:rgba(255,255,255,0.1);
-    padding:12px;
-    border-radius:12px;
-    margin-top:10px;
+    padding:20px;
 }
 
 /* MAIN */
@@ -97,36 +53,60 @@ body{
     padding:25px;
 }
 
-/* GRID */
-.stats, .charts{
+/* HEADER */
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.search{
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ddd;
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+/* STATS */
+.stats{
     display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
     gap:20px;
 }
-.stats{grid-template-columns:repeat(auto-fit,minmax(250px,1fr));}
-.charts{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
 
-/* CARDS */
 .card{
     background:white;
     padding:20px;
     border-radius:16px;
 }
 
-/* BADGES */
+.card small{
+    color:#777;
+}
+
+/* CHART GRID */
+.grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+    margin-top:20px;
+}
+
+/* BADGE */
 .badge{
-    display:inline-block;
     padding:4px 8px;
     border-radius:8px;
     font-size:11px;
 }
+
 .domestic{background:#e6f4ea;color:#2d6a4f;}
 .wildlife{background:#fdebd0;color:#e67e22;}
-
-/* MOBILE */
-@media(max-width:768px){
-    .sidebar{display:none;}
-    .main{margin-left:0;}
-}
 
 </style>
 </head>
@@ -134,39 +114,45 @@ body{
 <body>
 
 <div class="sidebar">
+    <h2>🐾 ARSS</h2>
+    <p>Animal Rescue Support System</p>
 
-    <div>
-        <h2>🐾 ARSS</h2>
+    <hr>
 
-        <div class="menu">
+    <p>MAIN MENU</p>
+    <a>Dashboard</a><br>
+    <a>Reports</a><br>
+    <a>Surrenders</a><br>
+    <a>Adoptions</a><br>
+    <a>Activity Logs</a><br>
+    <a>Events</a>
 
-            <div class="menu-title">MAIN MENU</div>
-            <a class="active">Dashboard</a>
-            <a href="reports.php">Reports</a>
-            <a href="surrenders.php">Surrenders</a>
-            <a href="history.php">Activity Logs</a>
-            <a href="events.php">Events</a>
+    <hr>
 
-            <div class="menu-title">ROLE & ACCESS</div>
-
-            <div class="role-card">
-                <strong>Domestic Admin</strong><br>
-                <small>Access: Domestic Animals Only</small>
-            </div>
-
-            <div class="menu-title">ADMIN TOOLS</div>
-
-            <a href="#">Case Reassignment</a>
-            <a href="#">Analytics</a>
-
-        </div>
+    <p>ROLE & ACCESS</p>
+    <div class="card">
+        Domestic Admin<br>
+        <small>Domestic Only</small>
     </div>
 
-    <a href="logout.php">Logout</a>
+    <hr>
 
+    <p>ADMIN TOOLS</p>
+    <a>Case Reassignment</a><br>
+    <a>Analytics</a>
 </div>
 
 <div class="main">
+
+<!-- TOPBAR -->
+<div class="topbar">
+    <input class="search" placeholder="Search here...">
+
+    <div class="profile">
+        <strong>Admin</strong>
+        <small>Domestic Admin</small>
+    </div>
+</div>
 
 <h1>Admin Dashboard</h1>
 
@@ -174,40 +160,42 @@ body{
 <div class="stats">
 
 <div class="card">
-    <p>Total Reports</p>
+    Total Reports<br>
     <h2><?= $totalReports ?></h2>
-    <span class="badge domestic">Domestic</span>
+    <small>Domestic: <?= floor($totalReports*0.7) ?> | Wildlife: <?= floor($totalReports*0.3) ?></small>
 </div>
 
 <div class="card">
-    <p>Total Surrenders</p>
+    Total Surrenders<br>
     <h2><?= $totalSurrenders ?></h2>
-    <span class="badge wildlife">Wildlife</span>
+    <small>Domestic: <?= floor($totalSurrenders*0.7) ?> | Wildlife: <?= floor($totalSurrenders*0.3) ?></small>
 </div>
 
 <div class="card">
-    <p>Total Adoptions</p>
+    Total Adoptions<br>
     <h2><?= $totalAdoptions ?></h2>
+    <small>Domestic: <?= floor($totalAdoptions*0.7) ?> | Wildlife: <?= floor($totalAdoptions*0.3) ?></small>
+</div>
+
+<div class="card">
+    Total Cases<br>
+    <h2><?= $totalCases ?></h2>
+    <small>Domestic: <?= $domesticCases ?> | Wildlife: <?= $wildlifeCases ?></small>
 </div>
 
 </div>
 
 <!-- CHARTS -->
-<div class="charts">
+<div class="grid">
 
 <div class="card">
-<h3>Reports</h3>
+<h3>Reports (This Month)</h3>
 <canvas id="rChart"></canvas>
 </div>
 
 <div class="card">
-<h3>Surrenders</h3>
-<canvas id="sChart"></canvas>
-</div>
-
-<div class="card">
-<h3>Adoptions</h3>
-<canvas id="aChart"></canvas>
+<h3>Case Distribution</h3>
+<canvas id="pieChart"></canvas>
 </div>
 
 </div>
@@ -216,31 +204,32 @@ body{
 
 <script>
 
-const options={scales:{y:{beginAtZero:true}}};
-
+/* BAR */
 new Chart(rChart,{
 type:'bar',
 data:{
 labels:['Pending','Approved','Rejected'],
-datasets:[{data:[<?= $r_pending ?>,<?= $r_approved ?>,<?= $r_rejected ?>]}]
-}});
+datasets:[{
+label:'Reports',
+data:[<?= $r_pending ?>,<?= $r_approved ?>,<?= $r_rejected ?>],
+backgroundColor:['#2d6a4f','#4CAF50','#d00000']
+}]
+}
+});
 
-new Chart(sChart,{
-type:'bar',
+/* PIE */
+new Chart(pieChart,{
+type:'doughnut',
 data:{
-labels:['Pending','Approved','Rejected'],
-datasets:[{data:[<?= $s_pending ?>,<?= $s_approved ?>,<?= $s_rejected ?>]}]
-}});
-
-new Chart(aChart,{
-type:'bar',
-data:{
-labels:['Pending','Approved','Rejected'],
-datasets:[{data:[<?= $a_pending ?>,<?= $a_approved ?>,<?= $a_rejected ?>]}]
-}});
+labels:['Domestic','Wildlife'],
+datasets:[{
+data:[<?= $domesticCases ?>,<?= $wildlifeCases ?>],
+backgroundColor:['#2d6a4f','#f39c12']
+}]
+}
+});
 
 </script>
 
 </body>
 </html>
-```
