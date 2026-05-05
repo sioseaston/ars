@@ -2,14 +2,33 @@
 require '../includes/auth.php';
 require '../db.php';
 
+session_start();
+
+/* ===== ROLE FILTER FUNCTION ===== */
+function getRoleFilter() {
+
+    if (!isset($_SESSION['role'])) {
+        return [];
+    }
+
+    if ($_SESSION['role'] == 'domestic_admin') {
+        return ['animal_category' => 'domestic'];
+    }
+
+    return []; // admin & super_admin
+}
+
+/* ===== APPLY ROLE FILTER ===== */
+$filter = getRoleFilter();
+
 /* ===== TOTALS ===== */
-$totalReports = $db->reports->countDocuments();
-$totalSurrenders = $db->surrenders->countDocuments();
+$totalReports = $db->reports->countDocuments($filter);
+$totalSurrenders = $db->surrenders->countDocuments($filter);
 
 /* TOTAL CASES */
 $totalCases = $totalReports + $totalSurrenders;
 
-/* SPLIT */
+/* SPLIT (temporary logic) */
 $domesticReports = floor($totalReports * 0.7);
 $wildlifeReports = $totalReports - $domesticReports;
 
@@ -21,11 +40,11 @@ $domesticCases = $domesticReports + $domesticSurrenders;
 $wildlifeCases = $totalCases - $domesticCases;
 
 /* STATUS */
-$r_pending = $db->reports->countDocuments(['status'=>'pending']);
-$r_approved = $db->reports->countDocuments(['status'=>'approved']);
-$r_rejected = $db->reports->countDocuments(['status'=>'rejected']);
+$r_pending = $db->reports->countDocuments(array_merge($filter, ['status'=>'pending']));
+$r_approved = $db->reports->countDocuments(array_merge($filter, ['status'=>'approved']));
+$r_rejected = $db->reports->countDocuments(array_merge($filter, ['status'=>'rejected']));
 
-$s_pending = $db->surrenders->countDocuments(['status'=>'pending']);
+$s_pending = $db->surrenders->countDocuments(array_merge($filter, ['status'=>'pending']));
 ?>
 
 <!DOCTYPE html>
@@ -199,15 +218,39 @@ button{
 <a href="events.php">Events</a>
 
 <div class="section-title">ROLE & ACCESS</div>
+
 <div class="card" style="background:rgba(255,255,255,0.1);color:white;">
-Domestic Admin<br>
-<small>Domestic Only</small>
+
+<strong>
+<?= strtoupper(str_replace('_',' ', $_SESSION['role'] ?? 'admin')) ?>
+</strong><br>
+
+<small>
+<?php
+if(($_SESSION['role'] ?? '') == 'domestic_admin'){
+    echo "Domestic Only";
+}
+elseif(($_SESSION['role'] ?? '') == 'admin'){
+    echo "All Access";
+}
+elseif(($_SESSION['role'] ?? '') == 'super_admin'){
+    echo "Full System Access";
+}
+?>
+</small>
+
 </div>
+
+<?php if(($_SESSION['role'] ?? '') == 'super_admin'): ?>
 
 <div class="section-title">ADMIN TOOLS</div>
 <a>Case Reassignment</a>
 <a>Analytics</a>
 
+<?php endif; ?>
+<?php if($_SESSION['role'] == 'super_admin'): ?>
+<button>Go to Reassignment</button>
+<?php endif; ?>
 <br>
 <a href="logout.php">Logout</a>
 </div>
