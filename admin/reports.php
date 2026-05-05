@@ -1,6 +1,18 @@
 <?php
 require '../includes/auth.php';
 require '../db.php';
+session_start();
+
+function getRoleFilter() {
+    if (!isset($_SESSION['role'])) return [];
+
+    if ($_SESSION['role'] === 'domestic_admin') {
+        return ['animal_category' => 'domestic'];
+    }
+
+    // admin + super_admin see all
+    return [];
+}
 
 $collection = $db->reports;
 
