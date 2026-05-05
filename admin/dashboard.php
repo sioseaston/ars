@@ -6,26 +6,26 @@ require '../db.php';
 $totalReports = $db->reports->countDocuments();
 $totalSurrenders = $db->surrenders->countDocuments();
 
-/* SAMPLE SPLIT (REPLACE WITH REAL DATA LATER) */
+/* TOTAL CASES */
+$totalCases = $totalReports + $totalSurrenders;
+
+/* SPLIT */
 $domesticReports = floor($totalReports * 0.7);
 $wildlifeReports = $totalReports - $domesticReports;
 
 $domesticSurrenders = floor($totalSurrenders * 0.7);
 $wildlifeSurrenders = $totalSurrenders - $domesticSurrenders;
 
-
-$wildlifeCases = $totalCases - $domesticCases;
-$totalCases = $totalReports + $totalSurrenders;
-
+/* FINAL CASES */
 $domesticCases = $domesticReports + $domesticSurrenders;
 $wildlifeCases = $totalCases - $domesticCases;
-/* STATUS COUNTS */
+
+/* STATUS */
 $r_pending = $db->reports->countDocuments(['status'=>'pending']);
 $r_approved = $db->reports->countDocuments(['status'=>'approved']);
 $r_rejected = $db->reports->countDocuments(['status'=>'rejected']);
 
-
-$a_pending = $db->adoptions->countDocuments(['status'=>'pending']);
+$s_pending = $db->surrenders->countDocuments(['status'=>'pending']);
 ?>
 
 <!DOCTYPE html>
@@ -195,7 +195,6 @@ button{
 <a class="active">Dashboard</a>
 <a href="reports.php">Reports</a>
 <a href="surrenders.php">Surrenders</a>
-<a href="adoptions.php">Adoptions</a>
 <a href="history.php">Activity Logs</a>
 <a href="events.php">Events</a>
 
@@ -286,7 +285,6 @@ Domestic Admin<br>
 <h3>Recent Activity</h3>
 <p>New report submitted</p>
 <p>New surrender request</p>
-<p>New adoption application</p>
 </div>
 
 <div class="card">
