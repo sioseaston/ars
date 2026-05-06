@@ -84,7 +84,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
 .ic-b{background:var(--bl);color:var(--b)}
 .ic-t{background:var(--tl);color:var(--t)}
 .s-num{font-size:26px;font-weight:700;line-height:1}
-.s-lbl{font-size:12px;color:var(--mut);font-weight:500;margin-top:2px}
+.s-lbl{font-size:12px;color:var(--mut);font-weight:500;margin-top:2px;line-height:1.3}
 
 /* ── PANELS / TABLES ────────────────────────────────────────────────────────── */
 .tables-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px}
@@ -152,7 +152,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
 .soc{display:flex;gap:8px;flex-wrap:wrap}
 .sb2{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;text-decoration:none;transition:opacity .2s}
 .sb2:hover{opacity:.82}
-.fb{background:#1877F2}.ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}.tw{background:#1DA1F2}.yt{background:#FF0000}
+.fb{background:#1877F2}.ig{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}.tw{background:#1DA1F2}.yt{background:#FF0000}.tk{background:#000000}
 
 /* copyright */
 .copy{text-align:center;font-size:12px;color:var(--mut);margin-top:24px}
@@ -181,7 +181,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
 <button class="menu-btn" id="menuBtn" aria-label="Menu"><i class="fa-solid fa-bars"></i></button>
 <div class="overlay" id="overlay"></div>
 
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="sb-brand">
     <div class="sb-logo"><i class="fa-solid fa-paw"></i></div>
@@ -204,10 +203,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
   </div>
 </aside>
 
-<!-- MAIN -->
 <main class="main">
 
-  <!-- HERO -->
   <section class="hero">
     <div>
       <h1>Animal Rescue System</h1>
@@ -216,27 +213,26 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
     <img class="hero-img" src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=340&h=280&fit=crop&crop=faces" alt="Animals">
   </section>
 
-  <!-- STATS -->
   <section class="stats">
     <div class="stat-card">
       <div class="s-icon ic-g"><i class="fa-solid fa-house-chimney-medical"></i></div>
       <div>
         <div class="s-num"><?= $totalDomestic ?></div>
-        <div class="s-lbl">Total Domestic Reports</div>
+        <div class="s-lbl">Total Domestic Animals Reunited with Owner</div>
       </div>
     </div>
     <div class="stat-card">
       <div class="s-icon ic-b"><i class="fa-solid fa-magnifying-glass"></i></div>
       <div>
         <div class="s-num"><?= $domesticMissing ?></div>
-        <div class="s-lbl">Missing Reports</div>
+        <div class="s-lbl">Total Domestic Animals Missing</div>
       </div>
     </div>
     <div class="stat-card">
       <div class="s-icon ic-t"><i class="fa-solid fa-location-dot"></i></div>
       <div>
         <div class="s-num"><?= $domesticFound ?></div>
-        <div class="s-lbl">Found Reports</div>
+        <div class="s-lbl">Total Domestic Animals Found by Community</div>
       </div>
     </div>
     <div class="stat-card">
@@ -248,10 +244,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
     </div>
   </section>
 
-  <!-- TABLES -->
   <section class="tables-grid">
 
-    <!-- Missing -->
     <div class="panel">
       <div class="ph">
         <h2>Reported Missing Domestic Animals</h2>
@@ -283,7 +277,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
       <?php endif; ?>
     </div>
 
-    <!-- Found -->
     <div class="panel">
       <div class="ph">
         <h2>Domestic Animals Found by the Community</h2>
@@ -316,10 +309,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
 
   </section>
 
-  <!-- FOOTER GRID -->
   <section class="footer-grid">
 
-    <!-- About -->
     <div class="fbox">
       <div class="ab-head">
         <div class="ab-icon"><i class="fa-solid fa-paw"></i></div>
@@ -328,7 +319,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
       <p>The Animal Rescue System (ARS) helps the community report domestic animals, wildlife found near homes, wildlife in critical condition, and wildlife surrender cases. Together, we can protect and save more lives.</p>
     </div>
 
-    <!-- News & Events – split domestic / wildlife -->
     <div class="fbox">
       <div class="nh"><h3>Latest News &amp; Events</h3><a href="events.php">View All</a></div>
 
@@ -375,7 +365,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
       <?php endforeach; endif; ?>
     </div>
 
-    <!-- Quick Links -->
     <div class="fbox">
       <div class="ft">Quick Links</div>
       <div class="lg">
@@ -386,7 +375,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
       </div>
     </div>
 
-    <!-- Stay Connected – Domestic / Wildlife split -->
     <div class="fbox">
       <div class="ft">Stay Connected</div>
       <div class="sc-split">
@@ -395,13 +383,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);display:flex;
           <div class="soc">
             <a href="#" class="sb2 fb" title="Facebook – Domestic"><i class="fa-brands fa-facebook-f"></i></a>
             <a href="#" class="sb2 ig" title="Instagram – Domestic"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="sb2 tk" title="TikTok – Domestic"><i class="fa-brands fa-tiktok"></i></a>
           </div>
         </div>
         <div class="sc-col">
           <h4><i class="fa-solid fa-tree"></i> Wildlife</h4>
           <div class="soc">
-            <a href="#" class="sb2 tw" title="Twitter – Wildlife"><i class="fa-brands fa-twitter"></i></a>
-            <a href="#" class="sb2 yt" title="YouTube – Wildlife"><i class="fa-brands fa-youtube"></i></a>
+            <a href="#" class="sb2 fb" title="Facebook – Wildlife"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="sb2 ig" title="Instagram – Wildlife"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="sb2 tk" title="TikTok – Wildlife"><i class="fa-brands fa-tiktok"></i></a>
           </div>
         </div>
       </div>
