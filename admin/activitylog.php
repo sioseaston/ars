@@ -214,7 +214,7 @@ Reports
 Surrenders
 </a>
 
-<a href="history.php" class="active">
+<a href="activitylog.php" class="active">
 <i class="fas fa-clock"></i>
 Activity Logs
 </a>
