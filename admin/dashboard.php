@@ -242,8 +242,8 @@ elseif(($_SESSION['role'] ?? '') == 'super_admin'){
 <?php if(($_SESSION['role'] ?? '') == 'super_admin'): ?>
 
 <div class="section-title">ADMIN TOOLS</div>
-<a>Case Reassignment</a>
-<a>Analytics</a>
+<a href="reassign.php">Case Reassignments</a>
+<a href="analytics.php">Analytics</a>
 
 <?php endif; ?>
 <?php if($_SESSION['role'] == 'super_admin'): ?>
