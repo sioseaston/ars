@@ -212,7 +212,7 @@ button{
 <a class="active">Dashboard</a>
 <a href="reports.php">Reports</a>
 <a href="surrenders.php">Surrenders</a>
-<a href="history.php">Activity Logs</a>
+<a href="activitylog.php">Activity Logs</a>
 <a href="events.php">Events</a>
 
 <div class="section-title">ROLE & ACCESS</div>
