@@ -74,31 +74,69 @@ $rejected = $db->reports->countDocuments(
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <style>
-body{margin:0;font-family:'Segoe UI';background:#f4f6f5;}
-.sidebar{width:260px;height:100vh;position:fixed;background:linear-gradient(#1b4332,#2d6a4f);color:white;padding:20px;}
-.sidebar a{display:block;padding:10px;margin:5px 0;border-radius:10px;color:white;text-decoration:none;}
-.sidebar a.active{background:rgba(255,255,255,.25);}
-.main{margin-left:260px;padding:25px;}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;}
-.card{background:white;padding:18px;border-radius:16px;box-shadow:0 5px 15px rgba(0,0,0,.05);}
-.grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-top:20px;}
-.meta{font-size:13px;color:#666;}
-.badge{padding:5px 10px;border-radius:12px;font-size:12px;}
-.pending{background:#fff3cd;color:#856404;}
-.approved{background:#d4edda;color:#155724;}
-.rejected{background:#f8d7da;color:#721c24;}
-.domestic{background:#e6f4ea;color:#2d6a4f;}
-.wildlife{background:#fdebd0;color:#e67e22;}
-.btn{padding:8px 12px;border-radius:8px;color:white;text-decoration:none;}
-.approve{background:#2d6a4f;}
-.reject{background:#d00000;}
-img{width:100%;border-radius:10px;margin-bottom:10px;}
-input,select{padding:10px;border-radius:8px;border:1px solid #ddd;}
-button{padding:10px;background:#2d6a4f;color:white;border:none;border-radius:8px;}
-@media(max-width:768px){
-.sidebar{display:none;}
-.main{margin-left:0;}
-.grid{grid-template-columns:1fr;}
+.logo{
+font-size:34px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.logo small{
+display:block;
+font-size:14px;
+font-weight:normal;
+margin-top:5px;
+}
+
+/* SECTION TITLE */
+.section-title{
+font-size:12px;
+opacity:.7;
+margin:25px 0 10px;
+}
+
+/* SIDEBAR */
+.sidebar{
+width:260px;
+height:100vh;
+position:fixed;
+left:0;
+top:0;
+background:linear-gradient(180deg,#1b4332,#2d6a4f);
+padding:20px;
+color:white;
+overflow:auto;
+}
+
+.sidebar a{
+display:flex;
+align-items:center;
+gap:12px;
+padding:14px;
+margin-bottom:8px;
+border-radius:14px;
+text-decoration:none;
+color:white;
+transition:.2s;
+}
+
+.sidebar a:hover{
+background:rgba(255,255,255,.1);
+}
+
+.sidebar a.active{
+background:rgba(255,255,255,.2);
+}
+
+/* ROLE CARD */
+.role-card{
+background:rgba(255,255,255,.12);
+padding:15px;
+border-radius:16px;
+margin-top:10px;
+}
+
+.role-card small{
+opacity:.8;
 }
 </style>
 </head>
